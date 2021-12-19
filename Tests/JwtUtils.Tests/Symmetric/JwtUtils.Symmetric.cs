@@ -7,7 +7,7 @@ public class Symmetric
 {
     string tokenSecret = "12345";
 
-    readonly Dictionary<string, object> _payload = new Dictionary<string, object>
+    readonly Dictionary<string, object> _payload = new()
     {
         { "exp", 12345 },
         { "uname", "i.a.ivanov" },

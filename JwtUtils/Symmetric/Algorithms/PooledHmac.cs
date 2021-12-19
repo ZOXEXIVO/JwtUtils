@@ -13,11 +13,19 @@ internal static class PooledHmac
 
     public static PoolGuard<HMAC> Get(string algorithm, string tokenSecret)
     {
-        var poolKeyLength = algorithm.Length + tokenSecret.Length + 1;
+        var hmacCacheKeyLength = algorithm.Length + tokenSecret.Length;
 
-        var poolKey = string.Create(null, stackalloc char[poolKeyLength], $"{algorithm}.{tokenSecret}");
-        
-        var pool = Pool.GetOrAdd(poolKey, _ => new Lazy<ObjectPool<HMAC>>(() => new ObjectPool<HMAC>()));
+        var hmacCacheKey = string.Create(hmacCacheKeyLength, (algorithm, tokenSecret), (chars, state) =>
+        {
+            var (currentAlgorithm, currentTokenSecret) = state;
+            
+            currentAlgorithm.AsSpan().CopyTo(chars);
+            chars = chars.Slice(currentAlgorithm.Length);
+            
+            currentTokenSecret.AsSpan().CopyTo(chars);
+        });
+
+        var pool = Pool.GetOrAdd(hmacCacheKey, _ => new Lazy<ObjectPool<HMAC>>(() => new ObjectPool<HMAC>()));
 
         return pool.Value.Get(() => Create(algorithm, tokenSecret));
     }
