@@ -14,6 +14,6 @@ public class Symmetric
             { "uname", "i.a.ivanov" }
         };
 
-        var token = JwtUtils.Symmetric.Create(payload, "12345");
+        var token = JwtUtils.Symmetric.Token.HS256(payload, "12345");
     }
 }

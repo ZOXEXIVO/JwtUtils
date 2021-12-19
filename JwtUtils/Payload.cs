@@ -5,7 +5,7 @@ using JwtUtils.Extensions;
 
 namespace JwtUtils;
 
-public class Payload
+internal class Payload
 {
     public static (IMemoryOwner<char> PayloadMemory, int ActualLength) Create(Dictionary<string, object> payload)
     {
