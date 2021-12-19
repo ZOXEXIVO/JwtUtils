@@ -18,18 +18,30 @@ public partial class JwtUtils
             {
                 private const string Algorithm = SymmetricAlgorithms.Hs256;
 
-                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret)
+                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret, string kid = null)
                 {
-                    var serializedPayload = tokenPayload.ToJson();
-                    return Token.Create(serializedPayload, tokenSecret, Algorithm);
+                    var jsonSerializedPayload = tokenPayload.ToJson();
+                    return Token.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
                 }
                 
-                public static string Create(string rawPayload, string tokenSecret)
+                public static string Create(string rawPayload, string tokenSecret, string kid = null)
                 {
-                    return Token.Create(rawPayload, tokenSecret, Algorithm);
+                    return Token.Create(rawPayload, tokenSecret, Algorithm, kid);
                 }
                 
-                public static bool Validate(ReadOnlySpan<char> token, string tokenSecret)
+                public static Dictionary<string, object> Read(ReadOnlySpan<char> token)
+                {
+                    // ReSharper disable once ArrangeStaticMemberQualifier
+                    return JwtUtils.ReadPayload<Dictionary<string, object>>(token);
+                }
+                
+                public static T Read<T>(ReadOnlySpan<char> token)
+                {
+                    // ReSharper disable once ArrangeStaticMemberQualifier
+                    return JwtUtils.ReadPayload<T>(token);
+                }
+                
+                public static bool ValidateSignature(ReadOnlySpan<char> token, string tokenSecret)
                 {
                     return Token.Validate(token, tokenSecret, Algorithm);
                 }
@@ -40,18 +52,30 @@ public partial class JwtUtils
             {
                 private const string Algorithm = SymmetricAlgorithms.Hs384;
                 
-                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret)
+                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret, string kid = null)
                 {
-                    var serializedPayload = tokenPayload.ToJson();
-                    return Token.Create(serializedPayload, tokenSecret, Algorithm);
+                    var jsonSerializedPayload = tokenPayload.ToJson();
+                    return Token.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
                 }
                 
-                public static string Create(string rawPayload, string tokenSecret)
+                public static string Create(string rawPayload, string tokenSecret, string kid = null)
                 {
-                    return Token.Create(rawPayload, tokenSecret, Algorithm);
+                    return Token.Create(rawPayload, tokenSecret, Algorithm, kid);
                 }
                 
-                public static bool Validate(ReadOnlySpan<char> token, string tokenSecret)
+                public static Dictionary<string, object> Read(ReadOnlySpan<char> token)
+                {
+                    // ReSharper disable once ArrangeStaticMemberQualifier
+                    return JwtUtils.ReadPayload<Dictionary<string, object>>(token);
+                }
+                
+                public static T Read<T>(ReadOnlySpan<char> token)
+                {
+                    // ReSharper disable once ArrangeStaticMemberQualifier
+                    return JwtUtils.ReadPayload<T>(token);
+                }
+                
+                public static bool ValidateSignature(ReadOnlySpan<char> token, string tokenSecret)
                 {
                     return Token.Validate(token, tokenSecret, Algorithm);
                 }
@@ -62,26 +86,38 @@ public partial class JwtUtils
             {
                 private const string Algorithm = SymmetricAlgorithms.Hs512;
                 
-                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret)
+                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret, string kid = null)
                 {
                     var jsonSerializedPayload = tokenPayload.ToJson();
-                    return Token.Create(jsonSerializedPayload, tokenSecret, Algorithm);
+                    return Token.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
                 }
                 
-                public static string Create(string rawPayload, string tokenSecret)
+                public static string Create(string rawPayload, string tokenSecret, string kid = null)
                 {
-                    return Token.Create(rawPayload, tokenSecret, Algorithm);
+                    return Token.Create(rawPayload, tokenSecret, Algorithm, kid);
                 }
                 
-                public static bool Validate(ReadOnlySpan<char> token, string tokenSecret)
+                public static Dictionary<string, object> Read(ReadOnlySpan<char> token)
+                {
+                    // ReSharper disable once ArrangeStaticMemberQualifier
+                    return JwtUtils.ReadPayload<Dictionary<string, object>>(token);
+                }
+                
+                public static T Read<T>(ReadOnlySpan<char> token)
+                {
+                    // ReSharper disable once ArrangeStaticMemberQualifier
+                    return JwtUtils.ReadPayload<T>(token);
+                }
+                
+                public static bool ValidateSignature(ReadOnlySpan<char> token, string tokenSecret)
                 {
                     return Token.Validate(token, tokenSecret, Algorithm);
                 }
             }
             
-            private static string Create(ReadOnlySpan<char> tokenPayload, string tokenSecret, string algorithm)
+            private static string Create(ReadOnlySpan<char> tokenPayload, string tokenSecret, string algorithm, string kid = null)
             {
-                var header = Header.Create(algorithm);
+                var header = Header.Create(algorithm, kid);
 
                 var payloadData = Payload.Create(tokenPayload);
 
@@ -128,7 +164,7 @@ public partial class JwtUtils
                     }
                 }
             }
-
+            
             private static bool Validate(ReadOnlySpan<char> token, string tokenSecret, string algorithm)
             {
                 var lastIndex = token.LastIndexOf('.');

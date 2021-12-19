@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JwtUtils.Extensions;
 using Xunit;
 
 namespace JwtUtils.Tests.Asymmetric;
@@ -67,10 +68,10 @@ JVtlccN8ujqAG/pk49vY80+OpKMGry+vBpO8LZpXkyzryW5vUSdhOgpfZIpU5QcO
 VNj1RNxmYEbUf+hd40MGzpTLOJxva880vpcu/BxLqi3xfOhLQrXTXRKRdBPr1yM1
 a9ku4ZoA7hOBuJawupx7v3oY+TZQ4tKUs554fg6zj87LUMgPEaozvMz8MWSlhnD1
 UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
-
+    
     readonly Dictionary<string, object> _payload = new()
     {
-        { "exp", 12345 },
+        { "exp", 1639942616 },
         { "uname", "i.a.ivanov" },
         {
             "aud", new[]
@@ -84,27 +85,42 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS256_IsCorrect()
     {
-        var token = JwtUtils.Asymmetric.Token.RS256.Create(_payload, _privateKey);
-        var isTokenValid = JwtUtils.Asymmetric.Token.RS256.Validate(token, _publicKey);
+        var token = JwtUtils.Asymmetric.Token.RS256.Create(_payload, _privateKey, "kid1");
+        var isTokenValid = JwtUtils.Asymmetric.Token.RS256.ValidateSignature(token, _publicKey);
 
+        var tokenData =  JwtUtils.Asymmetric.Token.RS384.Read(token);
+
+        var expiration = tokenData.Exp();
+        
         Assert.True(isTokenValid);
+        Assert.Equal(1639942616, expiration);
     }
     
     [Fact]
     public void JwtUtils_RS384_IsCorrect()
     {
-        var token = JwtUtils.Asymmetric.Token.RS384.Create(_payload, _privateKey);
-        var isTokenValid = JwtUtils.Asymmetric.Token.RS384.Validate(token, _publicKey);
+        var token = JwtUtils.Asymmetric.Token.RS384.Create(_payload, _privateKey, "kid1");
+        var isTokenValid = JwtUtils.Asymmetric.Token.RS384.ValidateSignature(token, _publicKey);
 
+        var tokenData = JwtUtils.Asymmetric.Token.RS384.Read(token);
+
+        var expiration = tokenData.Exp();
+        
         Assert.True(isTokenValid);
+        Assert.Equal(1639942616, expiration);
     }
     
     [Fact]
     public void JwtUtils_RS512_IsCorrect()
     {
-        var token = JwtUtils.Asymmetric.Token.RS512.Create(_payload, _privateKey);
-        var isTokenValid = JwtUtils.Asymmetric.Token.RS512.Validate(token, _publicKey);
+        var token = JwtUtils.Asymmetric.Token.RS512.Create(_payload, _privateKey, "kid1");
+        var isTokenValid = JwtUtils.Asymmetric.Token.RS512.ValidateSignature(token, _publicKey);
 
+        var tokenData = JwtUtils.Asymmetric.Token.RS512.Read(token);
+
+        var expiration = tokenData.Exp();
+        
         Assert.True(isTokenValid);
+        Assert.Equal(1639942616, expiration);
     }
 }

@@ -20,20 +20,32 @@ public partial class JwtUtils
             {
                 private const string Algorithm = AsymmetricAlgorithms.Rs256;
 
-                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret)
+                public static string Create(Dictionary<string, object> tokenPayload, string privatePemKey, string kid = null)
                 {
                     var jsonSerializedPayload = tokenPayload.ToJson();
-                    return Token.Create(jsonSerializedPayload, tokenSecret, Algorithm);
+                    return Token.Create(jsonSerializedPayload, privatePemKey, Algorithm, kid);
                 }
                 
-                public static string Create(string rawPayload, string tokenSecret)
+                public static string Create(string rawPayload, string privatePemKey, string kid = null)
                 {
-                    return Token.Create(rawPayload, tokenSecret, Algorithm);
+                    return Token.Create(rawPayload, privatePemKey, Algorithm, kid);
                 }
                 
-                public static bool Validate(ReadOnlySpan<char> token, string publicKey)
+                public static Dictionary<string, object> Read(ReadOnlySpan<char> token)
                 {
-                    return Token.Validate(token, publicKey, Algorithm);
+                    // ReSharper disable once ArrangeStaticMemberQualifier
+                    return JwtUtils.ReadPayload<Dictionary<string, object>>(token);
+                }
+                
+                public static T Read<T>(ReadOnlySpan<char> token)
+                {
+                    // ReSharper disable once ArrangeStaticMemberQualifier
+                    return JwtUtils.ReadPayload<T>(token);
+                }
+                
+                public static bool ValidateSignature(ReadOnlySpan<char> token, string publicKey)
+                {
+                    return Token.ValidateSignature(token, publicKey, Algorithm);
                 }
             }
             
@@ -42,20 +54,32 @@ public partial class JwtUtils
             {
                 private const string Algorithm = AsymmetricAlgorithms.Rs384;
 
-                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret)
+                public static string Create(Dictionary<string, object> tokenPayload, string privatePemKey, string kid = null)
                 {
                     var jsonSerializedPayload = tokenPayload.ToJson();
-                    return Token.Create(jsonSerializedPayload, tokenSecret, Algorithm);
+                    return Token.Create(jsonSerializedPayload, privatePemKey, Algorithm, kid);
                 }
                 
-                public static string Create(string rawPayload, string tokenSecret)
+                public static string Create(string rawPayload, string privatePemKey, string kid = null)
                 {
-                    return Token.Create(rawPayload, tokenSecret, Algorithm);
+                    return Token.Create(rawPayload, privatePemKey, Algorithm, kid);
                 }
                 
-                public static bool Validate(ReadOnlySpan<char> token, string publicKey)
+                public static Dictionary<string, object> Read(ReadOnlySpan<char> token)
                 {
-                    return Token.Validate(token, publicKey, Algorithm);
+                    // ReSharper disable once ArrangeStaticMemberQualifier
+                    return JwtUtils.ReadPayload<Dictionary<string, object>>(token);
+                }
+                
+                public static T Read<T>(ReadOnlySpan<char> token)
+                {
+                    // ReSharper disable once ArrangeStaticMemberQualifier
+                    return JwtUtils.ReadPayload<T>(token);
+                }
+                
+                public static bool ValidateSignature(ReadOnlySpan<char> token, string publicKey)
+                {
+                    return Token.ValidateSignature(token, publicKey, Algorithm);
                 }
             }
             
@@ -64,26 +88,38 @@ public partial class JwtUtils
             {
                 private const string Algorithm = AsymmetricAlgorithms.Rs512;
 
-                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret)
+                public static string Create(Dictionary<string, object> tokenPayload, string privatePemKey, string kid = null)
                 {
                     var jsonSerializedPayload = tokenPayload.ToJson();
-                    return Token.Create(jsonSerializedPayload, tokenSecret, Algorithm);
+                    return Token.Create(jsonSerializedPayload, privatePemKey, Algorithm, kid);
                 }
                 
-                public static string Create(string rawPayload, string tokenSecret)
+                public static string Create(string rawPayload, string privatePemKey, string kid = null)
                 {
-                    return Token.Create(rawPayload, tokenSecret, Algorithm);
+                    return Token.Create(rawPayload, privatePemKey, Algorithm, kid);
                 }
                 
-                public static bool Validate(ReadOnlySpan<char> token, string publicKey)
+                public static Dictionary<string, object> Read(ReadOnlySpan<char> token)
                 {
-                    return Token.Validate(token, publicKey, Algorithm);
+                    // ReSharper disable once ArrangeStaticMemberQualifier
+                    return JwtUtils.ReadPayload<Dictionary<string, object>>(token);
+                }
+                
+                public static T Read<T>(ReadOnlySpan<char> token)
+                {
+                    // ReSharper disable once ArrangeStaticMemberQualifier
+                    return JwtUtils.ReadPayload<T>(token);
+                }
+                
+                public static bool ValidateSignature(ReadOnlySpan<char> token, string publicKey)
+                {
+                    return Token.ValidateSignature(token, publicKey, Algorithm);
                 }
             }
             
-            private static string Create(ReadOnlySpan<char> tokenPayload, string privatePemKey, string algorithm)
+            private static string Create(ReadOnlySpan<char> tokenPayload, string privatePemKey, string algorithm, string kid)
             {
-                var header = Header.Create(algorithm);
+                var header = Header.Create(algorithm, kid);
 
                 var payloadData = Payload.Create(tokenPayload);
 
@@ -131,14 +167,14 @@ public partial class JwtUtils
                 }
             }
             
-            private static bool Validate(ReadOnlySpan<char> token, string publicPemKey, string algorithm)
+            private static bool ValidateSignature(ReadOnlySpan<char> token, string publicPemKey, string algorithm)
             {
                 var lastIndex = token.LastIndexOf('.');
 
                 var payload = token.Slice(0, lastIndex);
                 var signature = token.Slice(lastIndex + 1);
                 
-                return AsymmetricSignature.VerifySignature(payload, signature, publicPemKey, algorithm);
+                return AsymmetricSignature.ValidateSignature(payload, signature, publicPemKey, algorithm);
             }
         }
     }

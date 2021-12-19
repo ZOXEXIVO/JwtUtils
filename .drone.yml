@@ -1,0 +1,30 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: build
+    image: mcr.microsoft.com/dotnet/sdk:6.0.100
+    depends_on: [ clone ]
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
+    commands:
+      - dotnet build JwtUtils.sln -c Release
+      - dotnet test Tests/JwtUtils.Tests.csproj
+
+  - name: push
+    image: mcr.microsoft.com/dotnet/sdk:6.0.100
+    depends_on: [ build ]
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
+    commands:
+      - dotnet pack JwtUtils/JwtUtils.csproj -c Release  /p:PackageVersion=$DRONE_TAG
+    when:
+      event:
+        - tag
+
+volumes:
+  - name: docker_sock
+    host:
+      path: /var/run/docker.sock

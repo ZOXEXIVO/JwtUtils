@@ -1,4 +1,6 @@
-﻿namespace JwtUtils;
+﻿using System.Text.Json;
+
+namespace JwtUtils;
 
 public partial class JwtUtils
 {
@@ -43,16 +45,16 @@ public partial class JwtUtils
             }
         }
     }
-}
 
-internal readonly ref struct JwtPartData
-{
-    public readonly ReadOnlyMemory<char> Payload;
-    public readonly ReadOnlyMemory<char> Signature;
-
-    public JwtPartData(ReadOnlyMemory<char> payload, ReadOnlyMemory<char> signature)
+    private static T ReadPayload<T>(ReadOnlySpan<char> token)
     {
-        Payload = payload;
-        Signature = signature;
+        var payload = Payload.ExtractPayload(token);
+        var decodedPayload = Payload.PrepareForDecoding(payload);
+        using (decodedPayload.PayloadMemory)
+        {
+            var actualPayloadBuffer = decodedPayload.PayloadMemory.Memory.Span.Slice(0, decodedPayload.ActualLength);
+
+            return JsonSerializer.Deserialize<T>(actualPayloadBuffer);
+        }
     }
 }

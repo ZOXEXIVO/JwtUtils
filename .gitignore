@@ -226,4 +226,5 @@ out
 
 .angular
 
-Benchmarks
+
+BenchmarkDotNet.Artifacts

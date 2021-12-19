@@ -34,7 +34,7 @@ internal class Header
 
                 if (!string.IsNullOrWhiteSpace(kid))
                 {
-                    jsonWriter.WriteString("kid", "kid");
+                    jsonWriter.WriteString("kid", kid);
                 }
                 
                 jsonWriter.WriteEndObject();

@@ -2,11 +2,30 @@
 using System.Buffers.Text;
 using System.Text;
 using JwtUtils.Exceptions;
+using JwtUtils.Utils.Strings;
 
 namespace JwtUtils;
 
 internal class Payload
 {
+    public static ReadOnlySpan<char> ExtractPayload(ReadOnlySpan<char> token)
+    {
+        var firstIndex = token.IndexOf('.');
+        var lastIndex = token.LastIndexOf('.');
+
+        if (firstIndex >= lastIndex)
+        {
+            throw new JwtUtilsException("JWT is not well-formed");
+        }
+        
+        return token.Slice(firstIndex + 1, lastIndex - firstIndex - 1);
+    }
+
+    public static (IMemoryOwner<char> PayloadMemory, int ActualLength) PrepareForDecoding(ReadOnlySpan<char> payload)
+    {
+        return Base64Utils.DecodeFixedBase64(payload);
+    }
+
     public static (IMemoryOwner<char> PayloadMemory, int ActualLength) Create(ReadOnlySpan<char> payload)
     {
         int maxBytes = Encoding.UTF8.GetMaxByteCount(payload.Length);

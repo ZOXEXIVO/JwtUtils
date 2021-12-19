@@ -67,7 +67,7 @@ internal class AsymmetricSignature
         }
     }
     
-    public static bool VerifySignature(ReadOnlySpan<char> payload, ReadOnlySpan<char> signature, string publicPemKey, string algorithm)
+    public static bool ValidateSignature(ReadOnlySpan<char> payload, ReadOnlySpan<char> signature, string publicPemKey, string algorithm)
     {
         byte[] payloadBuffer = null;
 

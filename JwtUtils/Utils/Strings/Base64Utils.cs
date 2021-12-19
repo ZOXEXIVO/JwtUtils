@@ -1,11 +1,12 @@
 ﻿using System.Buffers;
 using System.Buffers.Text;
+using System.Runtime.CompilerServices;
 using System.Text;
 using JwtUtils.Exceptions;
 
 namespace JwtUtils.Utils.Strings;
 
-public static class Base64Utils
+internal static class Base64Utils
 {
     /// <summary>
     /// Make string representable for web (as cookie / header value)
@@ -73,7 +74,7 @@ public static class Base64Utils
             }
         }
 
-        return buffer.Slice(bufferLength);
+        return buffer.Slice(0, bufferLength);
     }
 
     public static (IMemoryOwner<char> Memory, int Bytes) ConvertToFixedBase64(Span<byte> buffer)
@@ -164,6 +165,65 @@ public static class Base64Utils
             if (byteBuffer != null)
             {
                 ArrayPool<byte>.Shared.Return(byteBuffer);
+            }
+        }
+    }
+    
+    public static (IMemoryOwner<char> Memory, int Bytes) DecodeFixedBase64(ReadOnlySpan<char> buffer)
+    {
+        char[] bufferCopy = null;
+        byte[] byteBuffer = null;
+        byte[] encodingByteBuffer = null;
+        
+        var bufferLengthWithExtraSpace = buffer.Length + 2; 
+        
+        try
+        {
+            bufferCopy = ArrayPool<char>.Shared.Rent(bufferLengthWithExtraSpace);
+            
+            buffer.CopyTo( bufferCopy);
+
+            var unfixedBuffer = bufferCopy.AsSpan().Slice(0, bufferLengthWithExtraSpace).UnfixForWeb(buffer.Length);
+            
+            byteBuffer = ArrayPool<byte>.Shared.Rent(Encoding.UTF8.GetMaxByteCount(unfixedBuffer.Length));
+           
+            var encodedBytesLength = Encoding.UTF8.GetBytes(unfixedBuffer, byteBuffer);
+
+            var actualBytesBuffer = byteBuffer.AsSpan().Slice(0, encodedBytesLength);
+            
+            var resultBufferLength = Base64.GetMaxDecodedFromUtf8Length(encodedBytesLength);
+            
+            encodingByteBuffer = ArrayPool<byte>.Shared.Rent(resultBufferLength);
+
+            var encodingState = Base64.DecodeFromUtf8(actualBytesBuffer, encodingByteBuffer, out var bytesWritten,  out var base64DecodedBytes);
+            if (encodingState != OperationStatus.Done)
+            {
+                throw new JwtUtilsException($"Base64 decoding failed: {encodingState}");
+            }
+
+            var finalCharCount = Encoding.UTF8.GetMaxCharCount(base64DecodedBytes);
+     
+            var resultBuffer = MemoryPool<char>.Shared.Rent(finalCharCount);
+
+            var utfEncodedLength = Encoding.UTF8.GetChars(encodingByteBuffer.AsSpan().Slice(0, base64DecodedBytes), resultBuffer.Memory.Span);
+            
+            return (resultBuffer, utfEncodedLength);
+        }
+        finally
+        {
+            if (bufferCopy != null)
+            {
+                ArrayPool<char>.Shared.Return(bufferCopy);
+            }
+            
+            if (byteBuffer != null)
+            {
+                ArrayPool<byte>.Shared.Return(byteBuffer);
+            }
+            
+            if (encodingByteBuffer != null)
+            {
+                ArrayPool<byte>.Shared.Return(encodingByteBuffer);
             }
         }
     }

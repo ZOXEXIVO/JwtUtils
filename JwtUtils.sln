@@ -10,6 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JwtUtils.Benchmarks", "Benchmarks\JwtUtils.Benchmarks\JwtUtils.Benchmarks.csproj", "{279B378C-79FD-46F3-B9B5-D3092148BA2F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Publish", "Publish", "{B6111DA0-B67E-4922-B0FB-96AAF5A32EEC}"
+	ProjectSection(SolutionItems) = preProject
+		.drone.yml = .drone.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
