@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Buffers.Text;
 using System.Text;
+using JwtUtils.Exceptions;
 using JwtUtils.Symmetric.Algorithms;
 using JwtUtils.Utils.Strings;
 
@@ -8,7 +9,7 @@ namespace JwtUtils.Symmetric;
 
 internal class SymmetricSignature
 {
-    public static string Create(ReadOnlySpan<char> payload, string tokenSecret, string algorithm)
+    public static (IMemoryOwner<char> Memory, int Bytes) Create(ReadOnlySpan<char> payload, string tokenSecret, string algorithm)
     {
         var maxBytesCount = Encoding.UTF8.GetMaxByteCount(payload.Length);
 
@@ -28,7 +29,7 @@ internal class SymmetricSignature
 
             if (!hashAlgorithm.PooledObject.TryComputeHash(actualBuffer, hashBuffer, out int bytesWritten))
             {
-                throw new InvalidOperationException();
+                throw new JwtUtilsException($"Compute hash with algorithm {algorithm} failed");
             }
 
             var actualHashData = hashBuffer.Slice(0, bytesWritten);

@@ -6,19 +6,34 @@ namespace JwtUtils.Asymmetric.Algorithms;
 
 internal static class PooledRsa
 {
-    private static readonly ConcurrentDictionary<string, Lazy<ObjectPool<RSA>>> Pool = new();
+    private static readonly ConcurrentDictionary<string, Lazy<ObjectPool<RSA>>> PrivatePool = new();
+    private static readonly ConcurrentDictionary<string, Lazy<ObjectPool<RSA>>> PublicPool = new();
     
-    public static PoolGuard<RSA> Get(string privateKey)
+    public static PoolGuard<RSA> GetPrivateRsa(string privateKey)
     {
-        var pool = Pool.GetOrAdd(privateKey, _ => new Lazy<ObjectPool<RSA>>(() => new ObjectPool<RSA>()));
+        var pool = PrivatePool.GetOrAdd(privateKey, _ => new Lazy<ObjectPool<RSA>>(() => new ObjectPool<RSA>()));
     
-        return pool.Value.Get(() => Create(privateKey));
+        return pool.Value.Get(() => CreatePrivate(privateKey));
     }
     
-    private static RSA Create(string privatePemKey)
+    public static PoolGuard<RSA> GetPublicRsa(string publicKey)
+    {
+        var pool = PublicPool.GetOrAdd(publicKey, _ => new Lazy<ObjectPool<RSA>>(() => new ObjectPool<RSA>()));
+    
+        return pool.Value.Get(() => CreatePublic(publicKey));
+    }
+    
+    private static RSA CreatePrivate(string privatePemKey)
     {
         var rsa = RSA.Create();
         rsa.ImportRSAPrivateKey(Convert.FromBase64String(privatePemKey), out _);
+        return rsa;
+    }
+    
+    private static RSA CreatePublic(string publicPemKey)
+    {
+        var rsa = RSA.Create();
+        rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(publicPemKey), out _);
         return rsa;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using JwtUtils.Extensions;
 using JwtUtils.Symmetric;
 using JwtUtils.Symmetric.Constants;
 using JwtUtils.Utils.Strings;
@@ -12,43 +13,73 @@ public partial class JwtUtils
     {
         public static partial class Token
         {
-            /// <summary>
-            /// Create token with HMAC256 algorithm name
-            /// </summary>
-            /// <param name="tokenPayload"></param>
-            /// <param name="tokenSecret"></param>
-            /// <returns></returns>
             // ReSharper disable once InconsistentNaming
-            public static string HS256(Dictionary<string, object> tokenPayload, string tokenSecret)
+            public static partial class HS256
             {
-                return Create(tokenPayload, tokenSecret, SymmetricAlgorithms.Hs256);
+                private const string Algorithm = SymmetricAlgorithms.Hs256;
+
+                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret)
+                {
+                    var serializedPayload = tokenPayload.ToJson();
+                    return Token.Create(serializedPayload, tokenSecret, Algorithm);
+                }
+                
+                public static string Create(string rawPayload, string tokenSecret)
+                {
+                    return Token.Create(rawPayload, tokenSecret, Algorithm);
+                }
+                
+                public static bool Validate(ReadOnlySpan<char> token, string tokenSecret)
+                {
+                    return Token.Validate(token, tokenSecret, Algorithm);
+                }
+            }
+
+            // ReSharper disable once InconsistentNaming
+            public static partial class HS384
+            {
+                private const string Algorithm = SymmetricAlgorithms.Hs384;
+                
+                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret)
+                {
+                    var serializedPayload = tokenPayload.ToJson();
+                    return Token.Create(serializedPayload, tokenSecret, Algorithm);
+                }
+                
+                public static string Create(string rawPayload, string tokenSecret)
+                {
+                    return Token.Create(rawPayload, tokenSecret, Algorithm);
+                }
+                
+                public static bool Validate(ReadOnlySpan<char> token, string tokenSecret)
+                {
+                    return Token.Validate(token, tokenSecret, Algorithm);
+                }
+            }
+
+            // ReSharper disable once InconsistentNaming
+            public static partial class HS512
+            {
+                private const string Algorithm = SymmetricAlgorithms.Hs512;
+                
+                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret)
+                {
+                    var serializedPayload = tokenPayload.ToJson();
+                    return Token.Create(serializedPayload, tokenSecret, Algorithm);
+                }
+                
+                public static string Create(string rawPayload, string tokenSecret)
+                {
+                    return Token.Create(rawPayload, tokenSecret, Algorithm);
+                }
+                
+                public static bool Validate(ReadOnlySpan<char> token, string tokenSecret)
+                {
+                    return Token.Validate(token, tokenSecret, Algorithm);
+                }
             }
             
-            /// <summary>
-            /// Create token with HMAC384 algorithm name
-            /// </summary>
-            /// <param name="tokenPayload"></param>
-            /// <param name="tokenSecret"></param>
-            /// <returns></returns>
-            // ReSharper disable once InconsistentNaming
-            public static string HS384(Dictionary<string, object> tokenPayload, string tokenSecret)
-            {
-                return Create(tokenPayload, tokenSecret, SymmetricAlgorithms.Hs384);
-            }
-            
-            /// <summary>
-            /// Create token with HMAC512 algorithm name
-            /// </summary>
-            /// <param name="tokenPayload"></param>
-            /// <param name="tokenSecret"></param>
-            /// <returns></returns>
-            // ReSharper disable once InconsistentNaming
-            public static string HS512(Dictionary<string, object> tokenPayload, string tokenSecret)
-            {
-                return Create(tokenPayload, tokenSecret, SymmetricAlgorithms.Hs512);
-            }
-            
-            private static string Create(Dictionary<string, object> tokenPayload, string tokenSecret, string algorithm)
+            private static string Create(ReadOnlySpan<char> tokenPayload, string tokenSecret, string algorithm)
             {
                 var header = Header.Create(algorithm);
 
@@ -75,24 +106,41 @@ public partial class JwtUtils
                         var signaturePayload = headerPayloadBuffer.Memory.Span.Slice(0, signaturePayloadLength);
 
                         var signature = SymmetricSignature.Create(signaturePayload, tokenSecret, algorithm);
-
-                        int tokenLength = signaturePayloadLength + 1 + signature.Length;
-
-                        using (var resultMemoryBuffer = MemoryPool<char>.Shared.Rent(tokenLength))
+                        using (signature.Memory)
                         {
-                            var resultSpan = resultMemoryBuffer.Memory.Span;
+                            int tokenLength = signaturePayloadLength + 1 + signature.Bytes;
 
-                            signaturePayload.CopyTo(resultSpan);
-                            resultSpan = resultSpan.Slice(signaturePayload.Length);
+                            using (var resultMemoryBuffer = MemoryPool<char>.Shared.Rent(tokenLength))
+                            {
+                                var resultSpan = resultMemoryBuffer.Memory.Span;
 
-                            resultSpan[0] = '.';
-                            resultSpan = resultSpan.Slice(1);
+                                signaturePayload.CopyTo(resultSpan);
+                                resultSpan = resultSpan.Slice(signaturePayload.Length);
 
-                            signature.CopyTo(resultSpan);
+                                resultSpan[0] = '.';
+                                resultSpan = resultSpan.Slice(1);
 
-                            return new String(resultMemoryBuffer.Memory.Span.Slice(0, tokenLength));
+                                signature.Memory.Memory.Span.Slice(0, signature.Bytes).CopyTo(resultSpan);
+
+                                return new String(resultMemoryBuffer.Memory.Span.Slice(0, tokenLength));
+                            }
                         }
                     }
+                }
+            }
+
+            private static bool Validate(ReadOnlySpan<char> token, string tokenSecret, string algorithm)
+            {
+                var lastIndex = token.LastIndexOf('.');
+
+                var payload = token.Slice(0, lastIndex);
+                var signature = token.Slice(lastIndex + 1);
+                
+                var computedSignature = SymmetricSignature.Create(payload, tokenSecret, algorithm);
+                using (computedSignature.Memory)
+                {
+                    var computedSignatureBytes = computedSignature.Memory.Memory.Span.Slice(0, computedSignature.Bytes);
+                    return computedSignatureBytes.SequenceEqual(signature);
                 }
             }
         }

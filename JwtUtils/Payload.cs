@@ -8,11 +8,9 @@ namespace JwtUtils;
 
 internal class Payload
 {
-    public static (IMemoryOwner<char> PayloadMemory, int ActualLength) Create(Dictionary<string, object> payload)
+    public static (IMemoryOwner<char> PayloadMemory, int ActualLength) Create(ReadOnlySpan<char> payload)
     {
-        var jsonPayload = payload.ToJson();
-
-        int maxBytes = Encoding.UTF8.GetMaxByteCount(jsonPayload.Length);
+        int maxBytes = Encoding.UTF8.GetMaxByteCount(payload.Length);
 
         byte[] payloadBuffer = null;
         byte[] bytesToBase64Buffer = null;
@@ -20,7 +18,7 @@ internal class Payload
         {
             payloadBuffer = ArrayPool<byte>.Shared.Rent(maxBytes);
 
-            var bytesCount = Encoding.UTF8.GetBytes(jsonPayload, payloadBuffer);
+            var bytesCount = Encoding.UTF8.GetBytes(payload, payloadBuffer);
 
             var bytesPayload = payloadBuffer.AsSpan().Slice(0, bytesCount);
 

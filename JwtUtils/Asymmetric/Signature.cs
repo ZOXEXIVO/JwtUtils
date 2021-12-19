@@ -4,14 +4,13 @@ using System.Security.Cryptography;
 using System.Text;
 using JwtUtils.Asymmetric.Algorithms;
 using JwtUtils.Exceptions;
-using JwtUtils.Symmetric.Algorithms;
 using JwtUtils.Utils.Strings;
 
 namespace JwtUtils.Asymmetric;
 
 internal class AsymmetricSignature
 {
-    public static string FromPem(ReadOnlySpan<char> payload, string privatePemKey, string algorithm)
+    public static (IMemoryOwner<char> Memory, int Bytes) FromPrivatePem(ReadOnlySpan<char> payload, string privatePemKey, string algorithm)
     {
         var maxBytesCount = Encoding.UTF8.GetMaxByteCount(payload.Length);
 
@@ -21,7 +20,7 @@ internal class AsymmetricSignature
         {
             byteBuffer = ArrayPool<byte>.Shared.Rent(maxBytesCount);
 
-            using var rsaAlgorithm = PooledRsa.Get(privatePemKey);
+            using var rsaAlgorithm = PooledRsa.GetPrivateRsa(privatePemKey);
 
             Span<byte> hashBuffer = stackalloc byte[rsaAlgorithm.PooledObject.KeySize];
 
@@ -31,7 +30,7 @@ internal class AsymmetricSignature
 
             if (!rsaAlgorithm.PooledObject.TrySignData(actualBuffer, hashBuffer,  GetAlgorithm(), RSASignaturePadding.Pkcs1, out var hashBytesWritten))
             {
-                throw new InvalidOperationException();
+                throw new JwtUtilsException($"Compute hash with algorithm {algorithm} failed");
             }
 
             var actualHashData = hashBuffer.Slice(0, hashBytesWritten);
@@ -49,6 +48,67 @@ internal class AsymmetricSignature
             if (byteBuffer != null)
             {
                 ArrayPool<byte>.Shared.Return(byteBuffer);
+            }
+        }
+
+        HashAlgorithmName GetAlgorithm()
+        {
+            switch (algorithm)
+            {
+                case "RS256":
+                    return HashAlgorithmName.SHA256;
+                case "RS384":
+                    return HashAlgorithmName.SHA384;
+                case "RS512":
+                    return HashAlgorithmName.SHA512;
+            }
+
+            throw new JwtUtilsException($"Unknown RSA algorithm: {algorithm}");
+        }
+    }
+    
+    public static bool VerifySignature(ReadOnlySpan<char> payload, ReadOnlySpan<char> signature, string publicPemKey, string algorithm)
+    {
+        char[] signatureBuffer = null;
+        byte[] payloadBuffer = null;
+
+        try
+        {
+            signatureBuffer = ArrayPool<char>.Shared.Rent(signature.Length + 2);
+
+            signature.CopyTo(signatureBuffer);
+
+            var decodedSignature = signatureBuffer.AsSpan().UnfixForWeb(signature.Length);
+            var decodedSignatureLength = Encoding.UTF8.GetMaxByteCount(decodedSignature.Length);
+            
+            Span<byte> decodedSignatureBuffer = stackalloc byte[decodedSignatureLength];
+            var decodedSignatureBytesRetrieved =  Encoding.UTF8.GetBytes(decodedSignature, decodedSignatureBuffer);
+
+            var decodedSignatureSpan = decodedSignatureBuffer.Slice(0, decodedSignatureBytesRetrieved);
+            
+            using var rsaAlgorithm = PooledRsa.GetPublicRsa(publicPemKey);
+
+            var payloadBytesLength = Encoding.UTF8.GetMaxByteCount(payload.Length);
+            
+            payloadBuffer = ArrayPool<byte>.Shared.Rent(payloadBytesLength);
+
+            var bytesRetrieved = Encoding.UTF8.GetBytes(payload, payloadBuffer);
+
+            var actualPayloadBuffer = payloadBuffer.AsSpan().Slice(0, bytesRetrieved);
+
+            return rsaAlgorithm.PooledObject.VerifyHash(actualPayloadBuffer, decodedSignatureSpan, GetAlgorithm(),
+                RSASignaturePadding.Pkcs1);
+        }
+        finally
+        {
+            if (signatureBuffer != null)
+            {
+                ArrayPool<char>.Shared.Return(signatureBuffer);
+            }
+            
+            if (payloadBuffer != null)
+            {
+                ArrayPool<byte>.Shared.Return(payloadBuffer);
             }
         }
 

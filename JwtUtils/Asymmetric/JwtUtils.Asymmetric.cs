@@ -1,9 +1,9 @@
 ﻿// ReSharper disable once CheckNamespace
 
 using System.Buffers;
-using System.Security.Cryptography;
 using JwtUtils.Asymmetric;
 using JwtUtils.Asymmetric.Constants;
+using JwtUtils.Extensions;
 using JwtUtils.Utils.Strings;
 
 // ReSharper disable once CheckNamespace
@@ -15,19 +15,29 @@ public partial class JwtUtils
     {
         public static partial class Token
         {
-            /// <summary>
-            /// Create token with RS256 algorithm name
-            /// </summary>
-            /// <param name="tokenPayload"></param>
-            /// <param name="privatePemKey"></param>
-            /// <returns></returns>
             // ReSharper disable once InconsistentNaming
-            public static string RS256(Dictionary<string, object> tokenPayload, string privatePemKey)
+            public static partial class RS256
             {
-                return Create(tokenPayload, privatePemKey, AsymmetricAlgorithms.Rs256);
+                private const string Algorithm = AsymmetricAlgorithms.Rs256;
+
+                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret)
+                {
+                    var serializedPayload = tokenPayload.ToJson();
+                    return Token.Create(serializedPayload, tokenSecret, Algorithm);
+                }
+                
+                public static string Create(string rawPayload, string tokenSecret)
+                {
+                    return Token.Create(rawPayload, tokenSecret, Algorithm);
+                }
+                
+                public static bool Validate(ReadOnlySpan<char> token, string publicKey)
+                {
+                    return Token.Validate(token, publicKey, Algorithm);
+                }
             }
             
-            private static string Create(Dictionary<string, object> tokenPayload, string privatePemKey, string algorithm)
+            private static string Create(ReadOnlySpan<char> tokenPayload, string privatePemKey, string algorithm)
             {
                 var header = Header.Create(algorithm);
 
@@ -53,26 +63,38 @@ public partial class JwtUtils
 
                         var signaturePayload = headerPayloadBuffer.Memory.Span.Slice(0, signaturePayloadLength);
 
-                        var signature = AsymmetricSignature.FromPem(signaturePayload, privatePemKey, algorithm);
-
-                        int tokenLength = signaturePayloadLength + 1 + signature.Length;
-
-                        using (var resultMemoryBuffer = MemoryPool<char>.Shared.Rent(tokenLength))
+                        var signature = AsymmetricSignature.FromPrivatePem(signaturePayload, privatePemKey, algorithm);
+                        using (signature.Memory)
                         {
-                            var resultSpan = resultMemoryBuffer.Memory.Span;
+                            int tokenLength = signaturePayloadLength + 1 + signature.Bytes;
 
-                            signaturePayload.CopyTo(resultSpan);
-                            resultSpan = resultSpan.Slice(signaturePayload.Length);
+                            using (var resultMemoryBuffer = MemoryPool<char>.Shared.Rent(tokenLength))
+                            {
+                                var resultSpan = resultMemoryBuffer.Memory.Span;
 
-                            resultSpan[0] = '.';
-                            resultSpan = resultSpan.Slice(1);
+                                signaturePayload.CopyTo(resultSpan);
+                                resultSpan = resultSpan.Slice(signaturePayload.Length);
 
-                            signature.CopyTo(resultSpan);
+                                resultSpan[0] = '.';
+                                resultSpan = resultSpan.Slice(1);
 
-                            return new String(resultMemoryBuffer.Memory.Span.Slice(0, tokenLength));
+                                signature.Memory.Memory.Span.CopyTo(resultSpan);
+
+                                return new String(resultMemoryBuffer.Memory.Span.Slice(0, tokenLength));
+                            }
                         }
                     }
                 }
+            }
+            
+            private static bool Validate(ReadOnlySpan<char> token, string publicPemKey, string algorithm)
+            {
+                var lastIndex = token.LastIndexOf('.');
+
+                var payload = token.Slice(0, lastIndex);
+                var signature = token.Slice(lastIndex + 1);
+                
+                return AsymmetricSignature.VerifySignature(payload, signature, publicPemKey, algorithm);
             }
         }
     }

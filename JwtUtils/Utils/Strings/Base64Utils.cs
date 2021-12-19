@@ -76,7 +76,7 @@ public static class Base64Utils
         return buffer.Slice(bufferLength);
     }
 
-    public static string ConvertToFixedBase64(Span<byte> buffer)
+    public static (IMemoryOwner<char> Memory, int Bytes) ConvertToFixedBase64(Span<byte> buffer)
     {
         byte[] bytesToBase64Buffer = null;
         char[] charsArray = null;
@@ -99,7 +99,13 @@ public static class Base64Utils
 
             var actualCharsCount = Encoding.UTF8.GetChars(actualBytesBuffer, charsArray);
 
-            return new string( charsArray.AsSpan(0, actualCharsCount).FixForWeb());
+            var fixedBase64String = charsArray.AsSpan(0, actualCharsCount).FixForWeb();
+
+            var resultPooledString = MemoryPool<char>.Shared.Rent(fixedBase64String.Length);
+            
+            fixedBase64String.CopyTo(resultPooledString.Memory.Span);
+
+            return (resultPooledString, fixedBase64String.Length);
         }
         finally
         {
