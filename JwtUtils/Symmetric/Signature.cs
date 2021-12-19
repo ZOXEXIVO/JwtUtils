@@ -2,6 +2,7 @@
 using System.Buffers.Text;
 using System.Text;
 using JwtUtils.Symmetric.Algorithms;
+using JwtUtils.Utils.Strings;
 
 namespace JwtUtils.Symmetric;
 
@@ -38,7 +39,7 @@ internal class SymmetricSignature
 
             actualHashData.CopyTo(resultBuffer);
 
-            return Convert.ToBase64String(hashBuffer.Slice(0, bytesWritten));
+            return Base64Utils.ConvertToFixedBase64(hashBuffer.Slice(0, bytesWritten));
         }
         finally
         {

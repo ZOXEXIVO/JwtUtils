@@ -24,22 +24,10 @@ public partial class JwtUtils
             // ReSharper disable once InconsistentNaming
             public static string RS256(Dictionary<string, object> tokenPayload, string privatePemKey)
             {
-                return Create(tokenPayload, privatePemKey, null, AsymmetricAlgorithms.Rs256);
+                return Create(tokenPayload, privatePemKey, AsymmetricAlgorithms.Rs256);
             }
             
-            /// <summary>
-            /// Create token with RS256 algorithm name
-            /// </summary>
-            /// <param name="tokenPayload"></param>
-            /// <param name="rsa"></param>
-            /// <returns></returns>
-            // ReSharper disable once InconsistentNaming
-            public static string RS256(Dictionary<string, object> tokenPayload, RSA rsa)
-            {
-                return Create(tokenPayload, null, rsa, AsymmetricAlgorithms.Rs256);
-            }
-            
-            private static string Create(Dictionary<string, object> tokenPayload, string privatePemKey, RSA rsaAlgorithm, string algorithm)
+            private static string Create(Dictionary<string, object> tokenPayload, string privatePemKey, string algorithm)
             {
                 var header = Header.Create(algorithm);
 
@@ -65,7 +53,7 @@ public partial class JwtUtils
 
                         var signaturePayload = headerPayloadBuffer.Memory.Span.Slice(0, signaturePayloadLength);
 
-                        var signature = AsymmetricSignature.Create(signaturePayload, privatePemKey, algorithm);
+                        var signature = AsymmetricSignature.FromPem(signaturePayload, privatePemKey, algorithm);
 
                         int tokenLength = signaturePayloadLength + 1 + signature.Length;
 
