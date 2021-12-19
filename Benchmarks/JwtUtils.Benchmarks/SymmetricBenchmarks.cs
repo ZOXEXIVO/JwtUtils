@@ -32,25 +32,25 @@ public class SymmetricBenchmarks
     [Benchmark]
     public string JwtUtils_HS256_Create()
     {
-        return JwtUtils.Symmetric.Token.HS256.Create(_claims, TokenSecret);
+        return JwtUtils.SymmetricToken.HS256.Create(_claims, TokenSecret);
     }
     
     [Benchmark]
     public bool JwtUtils_HS256_Validate()
     {
-        return JwtUtils.Symmetric.Token.HS256.ValidateSignature(Hs256Token, TokenSecret);
+        return JwtUtils.SymmetricToken.HS256.ValidateSignature(Hs256Token, TokenSecret);
     }
 
     [Benchmark]
     public string JwtUtils_HS384_Create()
     {
-        return JwtUtils.Symmetric.Token.HS384.Create(_claims, TokenSecret);
+        return JwtUtils.SymmetricToken.HS384.Create(_claims, TokenSecret);
     }
 
     [Benchmark]
     public string JwtUtils_HS512_Create()
     {
-        return JwtUtils.Symmetric.Token.HS512.Create(_claims, TokenSecret);
+        return JwtUtils.SymmetricToken.HS512.Create(_claims, TokenSecret);
     }
 
     static readonly SymmetricSecurityKey SecurityKey = new(Encoding.UTF8.GetBytes(TokenSecret))

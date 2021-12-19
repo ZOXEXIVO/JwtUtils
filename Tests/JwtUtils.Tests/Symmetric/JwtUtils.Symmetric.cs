@@ -24,10 +24,10 @@ public class Symmetric
     [Fact]
     public void JwtUtils_HS256_IsCorrect()
     {
-        var token = JwtUtils.Symmetric.Token.HS256.Create(_payload, tokenSecret, "kid1");
-        var isTokenValid = JwtUtils.Symmetric.Token.HS256.ValidateSignature(token, tokenSecret);
+        var token = JwtUtils.SymmetricToken.HS256.Create(_payload, tokenSecret, "kid1");
+        var isTokenValid = JwtUtils.SymmetricToken.HS256.ValidateSignature(token, tokenSecret);
 
-        var tokenData = JwtUtils.Symmetric.Token.HS256.Read(token);
+        var tokenData = JwtUtils.SymmetricToken.HS256.Read(token);
 
         var expiration = tokenData.Exp();
         
@@ -38,10 +38,10 @@ public class Symmetric
     [Fact]
     public void JwtUtils_HS384_IsCorrect()
     {
-        var token = JwtUtils.Symmetric.Token.HS384.Create(_payload, tokenSecret, "kid1");
-        var isTokenValid = JwtUtils.Symmetric.Token.HS384.ValidateSignature(token, tokenSecret);
+        var token = JwtUtils.SymmetricToken.HS384.Create(_payload, tokenSecret, "kid1");
+        var isTokenValid = JwtUtils.SymmetricToken.HS384.ValidateSignature(token, tokenSecret);
 
-        var tokenData = JwtUtils.Symmetric.Token.HS384.Read(token);
+        var tokenData = JwtUtils.SymmetricToken.HS384.Read(token);
 
         var expiration = tokenData.Exp();
         
@@ -52,10 +52,10 @@ public class Symmetric
     [Fact]
     public void JwtUtils_HS512_IsCorrect()
     {
-        var token = JwtUtils.Symmetric.Token.HS512.Create(_payload, tokenSecret, "kid1");
-        var isTokenValid = JwtUtils.Symmetric.Token.HS512.ValidateSignature(token, tokenSecret);
+        var token = JwtUtils.SymmetricToken.HS512.Create(_payload, tokenSecret, "kid1");
+        var isTokenValid = JwtUtils.SymmetricToken.HS512.ValidateSignature(token, tokenSecret);
 
-        var tokenData = JwtUtils.Symmetric.Token.HS512.Read(token);
+        var tokenData = JwtUtils.SymmetricToken.HS512.Read(token);
 
         var expiration = tokenData.Exp();
         

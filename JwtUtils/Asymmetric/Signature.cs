@@ -2,7 +2,6 @@
 using System.Buffers.Text;
 using System.Security.Cryptography;
 using System.Text;
-using JwtUtils.Asymmetric.Algorithms;
 using JwtUtils.Exceptions;
 using JwtUtils.Utils.Strings;
 
@@ -20,7 +19,7 @@ internal class AsymmetricSignature
         {
             byteBuffer = ArrayPool<byte>.Shared.Rent(maxBytesCount);
 
-            using var rsaAlgorithm = PooledRsa.GetPrivateRsa(privatePemKey);
+            using var rsaAlgorithm = Algorithms.PooledRsa.GetPrivateRsa(privatePemKey);
 
             Span<byte> hashBuffer = stackalloc byte[rsaAlgorithm.PooledObject.KeySize];
 
@@ -76,7 +75,7 @@ internal class AsymmetricSignature
             var decodedSignature = Base64Utils.ConvertFromFixedBase64(signature);
             using (decodedSignature.Memory)
             {
-                using var rsaAlgorithm = PooledRsa.GetPublicRsa(publicPemKey);
+                using var rsaAlgorithm = Algorithms.PooledRsa.GetPublicRsa(publicPemKey);
 
                 var payloadBytesLength = Encoding.UTF8.GetMaxByteCount(payload.Length);
             

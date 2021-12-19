@@ -85,10 +85,10 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS256_IsCorrect()
     {
-        var token = JwtUtils.Asymmetric.Token.RS256.Create(_payload, _privateKey, "kid1");
-        var isTokenValid = JwtUtils.Asymmetric.Token.RS256.ValidateSignature(token, _publicKey);
+        var token = JwtUtils.AsymmetricToken.RS256.Create(_payload, _privateKey, "kid1");
+        var isTokenValid = JwtUtils.AsymmetricToken.RS256.ValidateSignature(token, _publicKey);
 
-        var tokenData =  JwtUtils.Asymmetric.Token.RS384.Read(token);
+        var tokenData =  JwtUtils.AsymmetricToken.RS384.Read(token);
 
         var expiration = tokenData.Exp();
         
@@ -99,10 +99,10 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS384_IsCorrect()
     {
-        var token = JwtUtils.Asymmetric.Token.RS384.Create(_payload, _privateKey, "kid1");
-        var isTokenValid = JwtUtils.Asymmetric.Token.RS384.ValidateSignature(token, _publicKey);
+        var token = JwtUtils.AsymmetricToken.RS384.Create(_payload, _privateKey, "kid1");
+        var isTokenValid = JwtUtils.AsymmetricToken.RS384.ValidateSignature(token, _publicKey);
 
-        var tokenData = JwtUtils.Asymmetric.Token.RS384.Read(token);
+        var tokenData = JwtUtils.AsymmetricToken.RS384.Read(token);
 
         var expiration = tokenData.Exp();
         
@@ -113,10 +113,10 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS512_IsCorrect()
     {
-        var token = JwtUtils.Asymmetric.Token.RS512.Create(_payload, _privateKey, "kid1");
-        var isTokenValid = JwtUtils.Asymmetric.Token.RS512.ValidateSignature(token, _publicKey);
+        var token = JwtUtils.AsymmetricToken.RS512.Create(_payload, _privateKey, "kid1");
+        var isTokenValid = JwtUtils.AsymmetricToken.RS512.ValidateSignature(token, _publicKey);
 
-        var tokenData = JwtUtils.Asymmetric.Token.RS512.Read(token);
+        var tokenData = JwtUtils.AsymmetricToken.RS512.Read(token);
 
         var expiration = tokenData.Exp();
         

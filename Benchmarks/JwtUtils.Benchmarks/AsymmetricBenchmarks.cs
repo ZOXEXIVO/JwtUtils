@@ -93,21 +93,21 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Benchmark]
     public string JwtUtils_RS256_Create()
     {
-        return JwtUtils.Asymmetric.Token.RS256.Create(_claims, PrivateKey);
+        return JwtUtils.AsymmetricToken.RS256.Create(_claims, PrivateKey);
     }
 
     
     [Benchmark]
     public string JwtUtils_RS384_Create()
     {
-        return JwtUtils.Asymmetric.Token.RS384.Create(_claims, PrivateKey);
+        return JwtUtils.AsymmetricToken.RS384.Create(_claims, PrivateKey);
     }
     
 
     [Benchmark]
     public string JwtUtils_RS512_Create()
     {
-        return JwtUtils.Asymmetric.Token.RS512.Create(_claims, PrivateKey);
+        return JwtUtils.AsymmetricToken.RS512.Create(_claims, PrivateKey);
     }
     
     private static RSA CreateRSA()

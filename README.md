@@ -31,7 +31,7 @@ Benchmarks:
     { "claims_array", new [] {"claim_item1", "claim_item2"}}
 };
         
-var token = JwtUtils.Symmetric.Token.HS256.Create(claims, tokenSecret);
+var token = JwtUtils.SymmetricToken.HS256.Create(claims, tokenSecret);
 ```
 
 #### Validate
@@ -40,7 +40,7 @@ var token = JwtUtils.Symmetric.Token.HS256.Create(claims, tokenSecret);
  string token = "{YOUR_JWT_TOKEN}";
  string tokenSecret = "{TOKEN_SECRET}";
 
- if (JwtUtils.Symmetric.Token.HS256.ValidateSignature(token, tokenSecret))
+ if (JwtUtils.SymmetricToken.HS256.ValidateSignature(token, tokenSecret))
  {
     // Token signature valid
  }
@@ -53,11 +53,11 @@ var token = JwtUtils.Symmetric.Token.HS256.Create(claims, tokenSecret);
 string token = "{JWT-TOKEN}";
 
 // Default - no typed
-var tokenResult = JwtUtils.Symmetric.Token.HS256.Read(tokenSecret);
+var tokenResult = JwtUtils.SymmetricToken.HS256.Read(tokenSecret);
 var expiration = token.Exp();
 
 // You can map Jwt to your own model
-var tokenResult = JwtUtils.Symmetric.Token.HS256.Read<CustomJwtModel>(tokenSecret);
+var tokenResult = JwtUtils.SymmetricToken.HS256.Read<CustomJwtModel>(tokenSecret);
         
 ```
 
@@ -82,7 +82,7 @@ var tokenResult = JwtUtils.Symmetric.Token.HS256.Read<CustomJwtModel>(tokenSecre
     { "claims_array", new [] {"claim_item1", "claim_item2"}}
 };
         
-var token = JwtUtils.Asymmetric.Token.RS256.Create(claims, privateKey);
+var token = JwtUtils.AsymmetricToken.RS256.Create(claims, privateKey);
 ```
 
 #### Validate
@@ -95,7 +95,7 @@ var token = JwtUtils.Asymmetric.Token.RS256.Create(claims, privateKey);
                         .............................................
                         O9wqUEJy2v8xOMbHvMkoKLPLc590zGV88HNvzJHkF5N5HWTB9ZZEWcehf6RcTA==";
 
- if (JwtUtils.Asymmetric.Token.RS256.ValidateSignature(token, publicKey))
+ if (JwtUtils.AsymmetricToken.RS256.ValidateSignature(token, publicKey))
  {
     // Token signature valid
  }
@@ -108,10 +108,10 @@ var token = JwtUtils.Asymmetric.Token.RS256.Create(claims, privateKey);
 string token = "{JWT-TOKEN}";
 
 // Default - no typed
-var tokenResult = JwtUtils.Asymmetric.Token.RS256.Read(tokenSecret);
+var tokenResult = JwtUtils.AsymmetricToken.RS256.Read(tokenSecret);
 var expiration = token.Exp();
 
 // You can map Jwt to your own model
-var tokenResult = JwtUtils.Asymmetric.Token.RS256.Read<CustomJwtModel>(tokenSecret);
+var tokenResult = JwtUtils.AsymmetricToken.RS256.Read<CustomJwtModel>(tokenSecret);
         
 ```

@@ -2,51 +2,45 @@
 
 namespace JwtUtils;
 
-public partial class JwtUtils
+public static partial class AsymmetricToken
 {
-    public static partial class Asymmetric
+    // ReSharper disable once InconsistentNaming
+    public static partial class RS256
     {
-        public static partial class Token
-        {
-            // ReSharper disable once InconsistentNaming
-            public static partial class RS256
-            {
-            }
-            
-            // ReSharper disable once InconsistentNaming
-            public static partial class RS384
-            {
-            }
-            
-            // ReSharper disable once InconsistentNaming
-            public static partial class RS512
-            {
-            }
-        }
     }
+            
+    // ReSharper disable once InconsistentNaming
+    public static partial class RS384
+    {
+    }
+            
+    // ReSharper disable once InconsistentNaming
+    public static partial class RS512
+    {
+    }
+}
     
-    public static partial class Symmetric
+public static partial class SymmetricToken
+{
+    // ReSharper disable once InconsistentNaming
+    public static partial class HS256
     {
-        public static partial class Token
-        {
-            // ReSharper disable once InconsistentNaming
-            public static partial class HS256
-            {
-            }
-            
-            // ReSharper disable once InconsistentNaming
-            public static partial class HS384
-            {
-            }
-            
-            // ReSharper disable once InconsistentNaming
-            public static partial class HS512
-            {
-            }
-        }
     }
+            
+    // ReSharper disable once InconsistentNaming
+    public static partial class HS384
+    {
+    }
+            
+    // ReSharper disable once InconsistentNaming
+    public static partial class HS512
+    {
+    }
+}
 
-    private static T ReadPayload<T>(ReadOnlySpan<char> token)
+public class PayloadExt
+{
+    public static T ReadPayload<T>(ReadOnlySpan<char> token)
     {
         var payload = Payload.ExtractPayload(token);
         var decodedPayload = Payload.PrepareForDecoding(payload);
