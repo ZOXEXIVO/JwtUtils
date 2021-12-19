@@ -9,7 +9,7 @@ steps:
       - name: docker_sock
         path: /var/run/docker.sock
     commands:
-      - dotnet build JwtUtils.sln -c Release
+      - dotnet build JwtUtils/JwtUtils.csproj -c Release
       - dotnet test Tests/JwtUtils.Tests.csproj
 
   - name: push
