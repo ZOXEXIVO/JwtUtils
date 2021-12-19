@@ -10,7 +10,7 @@ steps:
         path: /var/run/docker.sock
     commands:
       - dotnet build JwtUtils/JwtUtils.csproj -c Release
-      - dotnet test Tests/JwtUtils.Tests.csproj
+      - dotnet test JwtUtils/Tests/JwtUtils.Tests.csproj
 
   - name: push
     image: mcr.microsoft.com/dotnet/sdk:6.0.100
