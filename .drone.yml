@@ -14,12 +14,16 @@ steps:
 
   - name: push
     image: mcr.microsoft.com/dotnet/sdk:6.0.100
+    environment:
+      NUGET_APIKEY:
+        from_secret: NUGET_APIKEY
     depends_on: [ build ]
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
     commands:
-      - dotnet pack JwtUtils/JwtUtils.csproj -c Release  /p:PackageVersion=$DRONE_TAG
+      - dotnet pack JwtUtils/JwtUtils.csproj -c Release /p:PackageVersion=$DRONE_TAG
+      - dotnet nuget push **/JwtUtils.nupkg -k $NUGET_APIKEY -s https://www.nuget.org
     when:
       event:
         - tag
