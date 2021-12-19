@@ -120,4 +120,51 @@ public static class Base64Utils
             }
         }
     }
+
+    public static (IMemoryOwner<byte> Memory, int Bytes) ConvertFromFixedBase64(ReadOnlySpan<char> buffer)
+    {
+        char[] bufferCopy = null;
+        byte[] byteBuffer = null;
+
+        var bufferLengthWithExtraSpace = buffer.Length + 2; 
+        
+        try
+        {
+            bufferCopy = ArrayPool<char>.Shared.Rent(bufferLengthWithExtraSpace);
+            
+            buffer.CopyTo( bufferCopy);
+
+            var unfixedBuffer = bufferCopy.AsSpan().UnfixForWeb(buffer.Length);
+            
+            byteBuffer = ArrayPool<byte>.Shared.Rent(Encoding.UTF8.GetMaxByteCount(unfixedBuffer.Length));
+           
+            var encodedBytesLength = Encoding.UTF8.GetBytes(unfixedBuffer, byteBuffer);
+
+            var actualBytesBuffer = byteBuffer.AsSpan().Slice(0, encodedBytesLength);
+            
+            var resultBufferLength = Base64.GetMaxDecodedFromUtf8Length(encodedBytesLength);
+            
+            var resultBuffer = MemoryPool<byte>.Shared.Rent(resultBufferLength);
+
+            var encodingState = Base64.DecodeFromUtf8(actualBytesBuffer, resultBuffer.Memory.Span, out _,  out var base64DecodedBytes);
+            if (encodingState != OperationStatus.Done)
+            {
+                throw new JwtUtilsException($"Base64 decoding failed: {encodingState}");
+            }
+
+            return (resultBuffer, base64DecodedBytes);
+        }
+        finally
+        {
+            if (bufferCopy != null)
+            {
+                ArrayPool<char>.Shared.Return(bufferCopy);
+            }
+            
+            if (byteBuffer != null)
+            {
+                ArrayPool<byte>.Shared.Return(byteBuffer);
+            }
+        }
+    }
 }

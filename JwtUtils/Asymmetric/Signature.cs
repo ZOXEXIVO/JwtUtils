@@ -69,43 +69,29 @@ internal class AsymmetricSignature
     
     public static bool VerifySignature(ReadOnlySpan<char> payload, ReadOnlySpan<char> signature, string publicPemKey, string algorithm)
     {
-        char[] signatureBuffer = null;
         byte[] payloadBuffer = null;
 
         try
         {
-            signatureBuffer = ArrayPool<char>.Shared.Rent(signature.Length + 2);
+            var decodedSignature = Base64Utils.ConvertFromFixedBase64(signature);
+            using (decodedSignature.Memory)
+            {
+                using var rsaAlgorithm = PooledRsa.GetPublicRsa(publicPemKey);
 
-            signature.CopyTo(signatureBuffer);
-
-            var decodedSignature = signatureBuffer.AsSpan().UnfixForWeb(signature.Length);
-            var decodedSignatureLength = Encoding.UTF8.GetMaxByteCount(decodedSignature.Length);
+                var payloadBytesLength = Encoding.UTF8.GetMaxByteCount(payload.Length);
             
-            Span<byte> decodedSignatureBuffer = stackalloc byte[decodedSignatureLength];
-            var decodedSignatureBytesRetrieved =  Encoding.UTF8.GetBytes(decodedSignature, decodedSignatureBuffer);
+                payloadBuffer = ArrayPool<byte>.Shared.Rent(payloadBytesLength);
 
-            var decodedSignatureSpan = decodedSignatureBuffer.Slice(0, decodedSignatureBytesRetrieved);
-            
-            using var rsaAlgorithm = PooledRsa.GetPublicRsa(publicPemKey);
+                var actualPayloadBuffer = payloadBuffer.AsSpan().Slice(0, Encoding.UTF8.GetBytes(payload, payloadBuffer));
 
-            var payloadBytesLength = Encoding.UTF8.GetMaxByteCount(payload.Length);
-            
-            payloadBuffer = ArrayPool<byte>.Shared.Rent(payloadBytesLength);
-
-            var bytesRetrieved = Encoding.UTF8.GetBytes(payload, payloadBuffer);
-
-            var actualPayloadBuffer = payloadBuffer.AsSpan().Slice(0, bytesRetrieved);
-
-            return rsaAlgorithm.PooledObject.VerifyHash(actualPayloadBuffer, decodedSignatureSpan, GetAlgorithm(),
-                RSASignaturePadding.Pkcs1);
+                var decodedSignatureBytes = decodedSignature.Memory.Memory.Span.Slice(0, decodedSignature.Bytes);
+                
+                return rsaAlgorithm.PooledObject.VerifyData(actualPayloadBuffer, decodedSignatureBytes, GetAlgorithm(),
+                    RSASignaturePadding.Pkcs1);
+            }
         }
         finally
         {
-            if (signatureBuffer != null)
-            {
-                ArrayPool<char>.Shared.Return(signatureBuffer);
-            }
-            
             if (payloadBuffer != null)
             {
                 ArrayPool<byte>.Shared.Return(payloadBuffer);

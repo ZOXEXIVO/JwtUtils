@@ -64,8 +64,8 @@ public partial class JwtUtils
                 
                 public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret)
                 {
-                    var serializedPayload = tokenPayload.ToJson();
-                    return Token.Create(serializedPayload, tokenSecret, Algorithm);
+                    var jsonSerializedPayload = tokenPayload.ToJson();
+                    return Token.Create(jsonSerializedPayload, tokenSecret, Algorithm);
                 }
                 
                 public static string Create(string rawPayload, string tokenSecret)

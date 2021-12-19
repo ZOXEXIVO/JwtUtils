@@ -2,7 +2,6 @@
 using System.Buffers.Text;
 using System.Text;
 using JwtUtils.Exceptions;
-using JwtUtils.Extensions;
 
 namespace JwtUtils;
 

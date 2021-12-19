@@ -25,9 +25,7 @@ internal class SymmetricSignature
 
             var bytesRetrieved = Encoding.UTF8.GetBytes(payload, byteBuffer);
 
-            var actualBuffer = byteBuffer.AsSpan().Slice(0, bytesRetrieved);
-
-            if (!hashAlgorithm.PooledObject.TryComputeHash(actualBuffer, hashBuffer, out int bytesWritten))
+            if (!hashAlgorithm.PooledObject.TryComputeHash(byteBuffer.AsSpan().Slice(0, bytesRetrieved), hashBuffer, out int bytesWritten))
             {
                 throw new JwtUtilsException($"Compute hash with algorithm {algorithm} failed");
             }

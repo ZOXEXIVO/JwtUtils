@@ -22,8 +22,52 @@ public partial class JwtUtils
 
                 public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret)
                 {
-                    var serializedPayload = tokenPayload.ToJson();
-                    return Token.Create(serializedPayload, tokenSecret, Algorithm);
+                    var jsonSerializedPayload = tokenPayload.ToJson();
+                    return Token.Create(jsonSerializedPayload, tokenSecret, Algorithm);
+                }
+                
+                public static string Create(string rawPayload, string tokenSecret)
+                {
+                    return Token.Create(rawPayload, tokenSecret, Algorithm);
+                }
+                
+                public static bool Validate(ReadOnlySpan<char> token, string publicKey)
+                {
+                    return Token.Validate(token, publicKey, Algorithm);
+                }
+            }
+            
+            // ReSharper disable once InconsistentNaming
+            public static partial class RS384
+            {
+                private const string Algorithm = AsymmetricAlgorithms.Rs384;
+
+                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret)
+                {
+                    var jsonSerializedPayload = tokenPayload.ToJson();
+                    return Token.Create(jsonSerializedPayload, tokenSecret, Algorithm);
+                }
+                
+                public static string Create(string rawPayload, string tokenSecret)
+                {
+                    return Token.Create(rawPayload, tokenSecret, Algorithm);
+                }
+                
+                public static bool Validate(ReadOnlySpan<char> token, string publicKey)
+                {
+                    return Token.Validate(token, publicKey, Algorithm);
+                }
+            }
+            
+            // ReSharper disable once InconsistentNaming
+            public static partial class RS512
+            {
+                private const string Algorithm = AsymmetricAlgorithms.Rs512;
+
+                public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret)
+                {
+                    var jsonSerializedPayload = tokenPayload.ToJson();
+                    return Token.Create(jsonSerializedPayload, tokenSecret, Algorithm);
                 }
                 
                 public static string Create(string rawPayload, string tokenSecret)
@@ -78,7 +122,7 @@ public partial class JwtUtils
                                 resultSpan[0] = '.';
                                 resultSpan = resultSpan.Slice(1);
 
-                                signature.Memory.Memory.Span.CopyTo(resultSpan);
+                                signature.Memory.Memory.Span.Slice(0, signature.Bytes).CopyTo(resultSpan);
 
                                 return new String(resultMemoryBuffer.Memory.Span.Slice(0, tokenLength));
                             }
