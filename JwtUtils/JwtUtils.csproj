@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <LangVersion>10</LangVersion>
+        <NuspecFile>$(MSBuildThisFileDirectory)$(MSBuildProjectName).nuspec</NuspecFile>
     </PropertyGroup>
 
     <ItemGroup>
