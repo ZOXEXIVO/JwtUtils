@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
-using Microsoft.IdentityModel.Logging;
 
 namespace JwtUtils.Benchmarks
 {
@@ -7,11 +6,7 @@ namespace JwtUtils.Benchmarks
     {
         public static void Main(string[] args)
         {
-            IdentityModelEventSource.ShowPII = true;
-
-            //var t = SymmetricBenchmarks.JwtSecurityTokenHandler_HS256_Validate();
-            
-            //BenchmarkRunner.Run<SymmetricBenchmarks>();
+            BenchmarkRunner.Run<SymmetricBenchmarks>();
             BenchmarkRunner.Run<AsymmetricBenchmarks>();
         }
     }
