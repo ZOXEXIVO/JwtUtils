@@ -12,11 +12,11 @@
         <RepositoryUrl>https://github.com/ZOXEXIVO/JwtUtils</RepositoryUrl>
         <PackageProjectUrl>https://github.com/ZOXEXIVO/JwtUtils</PackageProjectUrl>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageReadmeFile>README.NUGET.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
-       <None Include="..\README.md" Pack="true" PackagePath="\"/>
+       <None Include="..\README.NUGET.md" Pack="true" PackagePath="\" />
     </ItemGroup>
     
     <ItemGroup>
