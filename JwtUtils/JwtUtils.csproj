@@ -3,10 +3,15 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <LangVersion>10</LangVersion>
-        <NuspecFile>$(MSBuildThisFileDirectory)$(MSBuildProjectName).nuspec</NuspecFile>
-        <NuspecProperties>$(NuspecProperties);version=$(PackageVersion)</NuspecProperties>
+        <Description>JwtUtils</Description>
+        <Version>$(PackageVersion)</Version>
+        <Title>JwtUtils</Title>
+        <Authors>ZOXEXIVO</Authors>
+        <PackageDescription>Fastest, Easy-API library to work with JWT-tokens</PackageDescription>
+        <RepositoryUrl>https://github.com/ZOXEXIVO/JwtUtils</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/ZOXEXIVO/JwtUtils</PackageProjectUrl>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>

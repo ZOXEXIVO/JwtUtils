@@ -1,4 +1,7 @@
 # JwtUtils
+
+[![Build Status](http://drone.zoxexivo.com/api/badges/ZOXEXIVO/JwtUtils/status.svg)](http://drone.zoxexivo.com/ZOXEXIVO/JwtUtils)
+
 Fastest, low-allocation library to work with JWT-tokens
 
 It wrap most useful API to work with JWT (Create, Validate, Read)
