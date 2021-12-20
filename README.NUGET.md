@@ -1,7 +1,5 @@
 # JwtUtils
 
-[![Build Status](http://drone.zoxexivo.com/api/badges/ZOXEXIVO/JwtUtils/status.svg)](http://drone.zoxexivo.com/ZOXEXIVO/JwtUtils)
-
 Fastest, low-allocation library to work with JWT-tokens
 
 It wrap most useful API to work with JWT (Create, Validate, Read)
@@ -9,11 +7,8 @@ It wrap most useful API to work with JWT (Create, Validate, Read)
 If you have simple app - you no need to work with dubious standard API: JwtSecurityTokenHandler e.t.c
 
 Benchmarks:
-[HS256, HS384, HS512]
-![Symmetric algorithms](.//Docs/Symmetric.jpg)
 
-[RS256, RS384, RS512]
-![Symmetric algorithms](.//Docs/Asymmetric.jpg)
+https://github.com/ZOXEXIVO/JwtUtils
 
 ## Usage
 

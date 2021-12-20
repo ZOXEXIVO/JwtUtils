@@ -14,29 +14,74 @@ public static partial class SymmetricToken
     {
         private const string Algorithm = SymmetricAlgorithms.Hs256;
 
+        /// <summary>
+        /// Create token from Dictionary(string, object) payload
+        /// </summary>
+        /// <param name="tokenPayload"></param>
+        /// <param name="tokenSecret"></param>
+        /// <param name="kid"></param>
+        /// <returns></returns>
         public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret, string kid = null)
         {
             var jsonSerializedPayload = tokenPayload.ToJson();
             return SymmetricToken.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
         }
 
+        /// <summary>
+        /// Create token with typed object that will be serialized with System.Text.Json 
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <param name="tokenSecret"></param>
+        /// <param name="kid"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static string Create<T>(T payload, string tokenSecret, string kid = null)
+        {
+            var jsonSerializedPayload = payload.ToJson();
+            return SymmetricToken.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
+        }
+        
+        /// <summary>
+        /// Create token with string payload AS IS
+        /// </summary>
+        /// <param name="tokenSecret"></param>
+        /// <param name="kid"></param>
+        /// <param name="rawPayload"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static string Create(string rawPayload, string tokenSecret, string kid = null)
         {
             return SymmetricToken.Create(rawPayload, tokenSecret, Algorithm, kid);
         }
 
+        /// <summary>
+        /// Read token payload to Dictionary(string,object)
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public static Dictionary<string, object> Read(ReadOnlySpan<char> token)
         {
             // ReSharper disable once ArrangeStaticMemberQualifier
             return PayloadExt.ReadPayload<Dictionary<string, object>>(token);
         }
 
+        /// <summary>
+        /// Read token payload to your custom type object with System.Text.Json
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public static T Read<T>(ReadOnlySpan<char> token)
         {
             // ReSharper disable once ArrangeStaticMemberQualifier
             return PayloadExt.ReadPayload<T>(token);
         }
 
+        /// <summary>
+        /// Validate token signature
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="tokenSecret"></param>
+        /// <returns></returns>
         public static bool ValidateSignature(ReadOnlySpan<char> token, string tokenSecret)
         {
             // ReSharper disable once ArrangeStaticMemberQualifier
@@ -49,29 +94,74 @@ public static partial class SymmetricToken
     {
         private const string Algorithm = SymmetricAlgorithms.Hs384;
 
+        /// <summary>
+        /// Create token from Dictionary(string, object) payload
+        /// </summary>
+        /// <param name="tokenPayload"></param>
+        /// <param name="tokenSecret"></param>
+        /// <param name="kid"></param>
+        /// <returns></returns>
         public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret, string kid = null)
         {
             var jsonSerializedPayload = tokenPayload.ToJson();
             return SymmetricToken.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
         }
+        
+        /// <summary>
+        /// Create token with typed object that will be serialized with System.Text.Json 
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <param name="tokenSecret"></param>
+        /// <param name="kid"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static string Create<T>(T payload, string tokenSecret, string kid = null)
+        {
+            var jsonSerializedPayload = payload.ToJson();
+            return SymmetricToken.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
+        }
 
+        /// <summary>
+        /// Create token with string payload AS IS
+        /// </summary>
+        /// <param name="tokenSecret"></param>
+        /// <param name="kid"></param>
+        /// <param name="rawPayload"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static string Create(string rawPayload, string tokenSecret, string kid = null)
         {
             return SymmetricToken.Create(rawPayload, tokenSecret, Algorithm, kid);
         }
 
+        /// <summary>
+        /// Read token payload to Dictionary(string,object)
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public static Dictionary<string, object> Read(ReadOnlySpan<char> token)
         {
             // ReSharper disable once ArrangeStaticMemberQualifier
             return PayloadExt.ReadPayload<Dictionary<string, object>>(token);
         }
 
+        /// <summary>
+        /// Read token payload to your custom type object with System.Text.Json
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public static T Read<T>(ReadOnlySpan<char> token)
         {
             // ReSharper disable once ArrangeStaticMemberQualifier
             return PayloadExt.ReadPayload<T>(token);
         }
 
+        /// <summary>
+        /// Validate token signature
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="tokenSecret"></param>
+        /// <returns></returns>
         public static bool ValidateSignature(ReadOnlySpan<char> token, string tokenSecret)
         {
             // ReSharper disable once ArrangeStaticMemberQualifier
@@ -84,29 +174,74 @@ public static partial class SymmetricToken
     {
         private const string Algorithm = SymmetricAlgorithms.Hs512;
 
+        /// <summary>
+        /// Create token from Dictionary(string, object) payload
+        /// </summary>
+        /// <param name="tokenPayload"></param>
+        /// <param name="tokenSecret"></param>
+        /// <param name="kid"></param>
+        /// <returns></returns>
         public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret, string kid = null)
         {
             var jsonSerializedPayload = tokenPayload.ToJson();
             return SymmetricToken.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
         }
 
+        /// <summary>
+        /// Create token with typed object that will be serialized with System.Text.Json 
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <param name="tokenSecret"></param>
+        /// <param name="kid"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static string Create<T>(T payload, string tokenSecret, string kid = null)
+        {
+            var jsonSerializedPayload = payload.ToJson();
+            return SymmetricToken.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
+        }
+
+        /// <summary>
+        /// Create token with string payload AS IS
+        /// </summary>
+        /// <param name="tokenSecret"></param>
+        /// <param name="kid"></param>
+        /// <param name="rawPayload"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static string Create(string rawPayload, string tokenSecret, string kid = null)
         {
             return SymmetricToken.Create(rawPayload, tokenSecret, Algorithm, kid);
         }
 
+        /// <summary>
+        /// Read token payload to Dictionary(string,object)
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public static Dictionary<string, object> Read(ReadOnlySpan<char> token)
         {
             // ReSharper disable once ArrangeStaticMemberQualifier
             return PayloadExt.ReadPayload<Dictionary<string, object>>(token);
         }
 
+        /// <summary>
+        /// Read token payload to your custom type object with System.Text.Json
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public static T Read<T>(ReadOnlySpan<char> token)
         {
             // ReSharper disable once ArrangeStaticMemberQualifier
             return PayloadExt.ReadPayload<T>(token);
         }
 
+        /// <summary>
+        /// Validate token signature
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="tokenSecret"></param>
+        /// <returns></returns>
         public static bool ValidateSignature(ReadOnlySpan<char> token, string tokenSecret)
         {
             return SymmetricToken.Validate(token, tokenSecret, Algorithm);

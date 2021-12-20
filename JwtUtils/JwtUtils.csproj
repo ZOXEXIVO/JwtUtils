@@ -8,12 +8,18 @@
         <Version>$(PackageVersion)</Version>
         <Title>JwtUtils</Title>
         <Authors>ZOXEXIVO</Authors>
-        <PackageDescription>Fastest, Easy-API library to work with JWT-tokens</PackageDescription>
+        <PackageDescription>Fastest, low-allocation, easy-api library to work with JWT-tokens</PackageDescription>
         <RepositoryUrl>https://github.com/ZOXEXIVO/JwtUtils</RepositoryUrl>
         <PackageProjectUrl>https://github.com/ZOXEXIVO/JwtUtils</PackageProjectUrl>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageReadmeFile>README.NUGET.md</PackageReadmeFile>
     </PropertyGroup>
 
+    <ItemGroup>
+       <None Include="..\README.NUGET.md" Pack="true" PackagePath="\" />
+       <None Include="..\README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+    
     <ItemGroup>
       <PackageReference Include="System.Text.Json" Version="6.0.1" />
     </ItemGroup>

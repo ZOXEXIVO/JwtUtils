@@ -13,7 +13,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Publish", "Publish", "{B6111DA0-B67E-4922-B0FB-96AAF5A32EEC}"
 	ProjectSection(SolutionItems) = preProject
 		.drone.yml = .drone.yml
-		README.md = README.md
 	EndProjectSection
 EndProject
 Global
