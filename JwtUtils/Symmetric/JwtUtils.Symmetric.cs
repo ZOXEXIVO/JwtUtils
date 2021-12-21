@@ -2,12 +2,13 @@
 using JwtUtils.Extensions;
 using JwtUtils.Symmetric;
 using JwtUtils.Symmetric.Constants;
-using JwtUtils.Utils.Strings;
+using JwtUtils.Utils;
 
 // ReSharper disable once CheckNamespace
 namespace JwtUtils;
 
-public static partial class SymmetricToken
+// ReSharper disable once InconsistentNaming
+public static partial class JWT
 {
     // ReSharper disable once InconsistentNaming
     public static partial class HS256
@@ -24,7 +25,9 @@ public static partial class SymmetricToken
         public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret, string kid = null)
         {
             var jsonSerializedPayload = tokenPayload.ToJson();
-            return SymmetricToken.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
+            
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateSymmetric(jsonSerializedPayload, tokenSecret, Algorithm, kid);
         }
 
         /// <summary>
@@ -38,7 +41,9 @@ public static partial class SymmetricToken
         public static string Create<T>(T payload, string tokenSecret, string kid = null)
         {
             var jsonSerializedPayload = payload.ToJson();
-            return SymmetricToken.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
+            
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateSymmetric(jsonSerializedPayload, tokenSecret, Algorithm, kid);
         }
         
         /// <summary>
@@ -51,29 +56,8 @@ public static partial class SymmetricToken
         /// <returns></returns>
         public static string Create(string rawPayload, string tokenSecret, string kid = null)
         {
-            return SymmetricToken.Create(rawPayload, tokenSecret, Algorithm, kid);
-        }
-
-        /// <summary>
-        /// Read token payload to Dictionary(string,object)
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static Dictionary<string, object> Read(ReadOnlySpan<char> token)
-        {
             // ReSharper disable once ArrangeStaticMemberQualifier
-            return PayloadExt.ReadPayload<Dictionary<string, object>>(token);
-        }
-
-        /// <summary>
-        /// Read token payload to your custom type object with System.Text.Json
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static T Read<T>(ReadOnlySpan<char> token)
-        {
-            // ReSharper disable once ArrangeStaticMemberQualifier
-            return PayloadExt.ReadPayload<T>(token);
+            return JWT.CreateSymmetric(rawPayload, tokenSecret, Algorithm, kid);
         }
 
         /// <summary>
@@ -85,7 +69,7 @@ public static partial class SymmetricToken
         public static bool ValidateSignature(ReadOnlySpan<char> token, string tokenSecret)
         {
             // ReSharper disable once ArrangeStaticMemberQualifier
-            return SymmetricToken.Validate(token, tokenSecret, Algorithm);
+            return JWT.ValidateSymmetric(token, tokenSecret, Algorithm);
         }
     }
 
@@ -104,7 +88,9 @@ public static partial class SymmetricToken
         public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret, string kid = null)
         {
             var jsonSerializedPayload = tokenPayload.ToJson();
-            return SymmetricToken.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
+            
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateSymmetric(jsonSerializedPayload, tokenSecret, Algorithm, kid);
         }
         
         /// <summary>
@@ -118,7 +104,9 @@ public static partial class SymmetricToken
         public static string Create<T>(T payload, string tokenSecret, string kid = null)
         {
             var jsonSerializedPayload = payload.ToJson();
-            return SymmetricToken.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
+            
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateSymmetric(jsonSerializedPayload, tokenSecret, Algorithm, kid);
         }
 
         /// <summary>
@@ -131,31 +119,10 @@ public static partial class SymmetricToken
         /// <returns></returns>
         public static string Create(string rawPayload, string tokenSecret, string kid = null)
         {
-            return SymmetricToken.Create(rawPayload, tokenSecret, Algorithm, kid);
-        }
-
-        /// <summary>
-        /// Read token payload to Dictionary(string,object)
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static Dictionary<string, object> Read(ReadOnlySpan<char> token)
-        {
             // ReSharper disable once ArrangeStaticMemberQualifier
-            return PayloadExt.ReadPayload<Dictionary<string, object>>(token);
+            return JWT.CreateSymmetric(rawPayload, tokenSecret, Algorithm, kid);
         }
-
-        /// <summary>
-        /// Read token payload to your custom type object with System.Text.Json
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static T Read<T>(ReadOnlySpan<char> token)
-        {
-            // ReSharper disable once ArrangeStaticMemberQualifier
-            return PayloadExt.ReadPayload<T>(token);
-        }
-
+        
         /// <summary>
         /// Validate token signature
         /// </summary>
@@ -165,7 +132,7 @@ public static partial class SymmetricToken
         public static bool ValidateSignature(ReadOnlySpan<char> token, string tokenSecret)
         {
             // ReSharper disable once ArrangeStaticMemberQualifier
-            return SymmetricToken.Validate(token, tokenSecret, Algorithm);
+            return JWT.ValidateSymmetric(token, tokenSecret, Algorithm);
         }
     }
 
@@ -184,7 +151,7 @@ public static partial class SymmetricToken
         public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret, string kid = null)
         {
             var jsonSerializedPayload = tokenPayload.ToJson();
-            return SymmetricToken.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
+            return JWT.CreateSymmetric(jsonSerializedPayload, tokenSecret, Algorithm, kid);
         }
 
         /// <summary>
@@ -198,7 +165,9 @@ public static partial class SymmetricToken
         public static string Create<T>(T payload, string tokenSecret, string kid = null)
         {
             var jsonSerializedPayload = payload.ToJson();
-            return SymmetricToken.Create(jsonSerializedPayload, tokenSecret, Algorithm, kid);
+            
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateSymmetric(jsonSerializedPayload, tokenSecret, Algorithm, kid);
         }
 
         /// <summary>
@@ -211,31 +180,10 @@ public static partial class SymmetricToken
         /// <returns></returns>
         public static string Create(string rawPayload, string tokenSecret, string kid = null)
         {
-            return SymmetricToken.Create(rawPayload, tokenSecret, Algorithm, kid);
-        }
-
-        /// <summary>
-        /// Read token payload to Dictionary(string,object)
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static Dictionary<string, object> Read(ReadOnlySpan<char> token)
-        {
             // ReSharper disable once ArrangeStaticMemberQualifier
-            return PayloadExt.ReadPayload<Dictionary<string, object>>(token);
+            return JWT.CreateSymmetric(rawPayload, tokenSecret, Algorithm, kid);
         }
-
-        /// <summary>
-        /// Read token payload to your custom type object with System.Text.Json
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static T Read<T>(ReadOnlySpan<char> token)
-        {
-            // ReSharper disable once ArrangeStaticMemberQualifier
-            return PayloadExt.ReadPayload<T>(token);
-        }
-
+        
         /// <summary>
         /// Validate token signature
         /// </summary>
@@ -244,11 +192,12 @@ public static partial class SymmetricToken
         /// <returns></returns>
         public static bool ValidateSignature(ReadOnlySpan<char> token, string tokenSecret)
         {
-            return SymmetricToken.Validate(token, tokenSecret, Algorithm);
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.ValidateSymmetric(token, tokenSecret, Algorithm);
         }
     }
 
-    private static string Create(ReadOnlySpan<char> tokenPayload, string tokenSecret, string algorithm,
+    private static string CreateSymmetric(ReadOnlySpan<char> tokenPayload, string tokenSecret, string algorithm,
         string kid = null)
     {
         var header = Header.Create(algorithm, kid);
@@ -299,7 +248,7 @@ public static partial class SymmetricToken
         }
     }
 
-    private static bool Validate(ReadOnlySpan<char> token, string tokenSecret, string algorithm)
+    private static bool ValidateSymmetric(ReadOnlySpan<char> token, string tokenSecret, string algorithm)
     {
         var lastIndex = token.LastIndexOf('.');
 

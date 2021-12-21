@@ -3,7 +3,7 @@ using System.Buffers.Text;
 using System.Security.Cryptography;
 using System.Text;
 using JwtUtils.Exceptions;
-using JwtUtils.Utils.Strings;
+using JwtUtils.Utils;
 
 namespace JwtUtils.Asymmetric;
 

@@ -1,7 +1,11 @@
 ﻿using System.Text.Json;
-using JwtUtils.Constants;
 
 namespace JwtUtils.Extensions;
+
+public class JwtClaims
+{
+    public const string Expiration = "exp";
+}
 
 public static class ClaimsDictionaryExtensions
 {

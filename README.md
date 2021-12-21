@@ -2,17 +2,28 @@
 
 [![Build Status](http://drone.zoxexivo.com/api/badges/ZOXEXIVO/JwtUtils/status.svg)](http://drone.zoxexivo.com/ZOXEXIVO/JwtUtils)
 
-Fastest, low-allocation library to work with JWT-tokens
+Fastest, low-allocation, simple API library to work with JWT-tokens
 
 It wrap most useful API to work with JWT (Create, Validate, Read)
 
-If you have simple app - you no need to work with dubious standard API: JwtSecurityTokenHandler e.t.c
+Now you don't need to use strange and inconvenient API in other packages<br/><br/>
 
-Benchmarks:
-[HS256, HS384, HS512]
+
+##### Available algorithms: 
+
+Symmetric: **HS256, HS384, HS512**
+
+Asymmetric: **RS256, RS384, RS512**
+
+
+### Benchmarks:
+
+Comparing [JwtUtils](https://github.com/ZOXEXIVO/JwtUtils) (Current) VS [JWT-Dotnet](https://github.com/jwt-dotnet/jwt) VS [System.IdentityModel.Tokens.Jwt](https://duckduckgo.com)
+
+[HS256]
 ![Symmetric algorithms](.//Docs/Symmetric.jpg)
 
-[RS256, RS384, RS512]
+[RS256]
 ![Symmetric algorithms](.//Docs/Asymmetric.jpg)
 
 ## Usage
@@ -30,7 +41,7 @@ Benchmarks:
     { "claims_array", new [] {"claim_item1", "claim_item2"}}
 };
         
-var token = SymmetricToken.HS256.Create(claims, "{TOKEN_SECRET}");
+var token = JWT.HS256.Create(claims, "{TOKEN_SECRET}");
 ```
 
 #### Create (Typed payload)
@@ -47,7 +58,7 @@ var payload =  new JwtPayload
     UserId = 123
 };
         
-var token = SymmetricToken.HS256.Create(payload, "{TOKEN_SECRET}");
+var token = JWT.HS256.Create(payload, "{TOKEN_SECRET}");
 ```
 
 #### Validate
@@ -56,7 +67,7 @@ var token = SymmetricToken.HS256.Create(payload, "{TOKEN_SECRET}");
 string token = "{YOUR_JWT_TOKEN}";
 string tokenSecret = "{TOKEN_SECRET}";
 
-if (SymmetricToken.HS256.ValidateSignature(token, tokenSecret))
+if (JWT.HS256.ValidateSignature(token, tokenSecret))
 {
    // Token signature valid
 }
@@ -68,11 +79,11 @@ if (SymmetricToken.HS256.ValidateSignature(token, tokenSecret))
 string token = "{JWT-TOKEN}";
 
 // Default - no typed
-var tokenResult = SymmetricToken.HS256.Read(tokenSecret);
+var tokenResult = JWT.Read(tokenSecret);
 var expiration = token.Exp();
 
 // You can map Jwt to your own model
-var tokenResult = SymmetricToken.HS256.Read<CustomJwtModel>(tokenSecret);
+var tokenResult = JWT.Read<CustomJwtModel>(tokenSecret);
 ```
 
 ### Asymmetric algorithms: RS256, RS384, RS512
@@ -96,7 +107,7 @@ var payload =  new Dictionary<string, object>
     { "claims_array", new [] {"claim_item1", "claim_item2"}}
 };
         
-var token = AsymmetricToken.RS256.Create(payload, privateKey);
+var token = JWT.RS256.Create(payload, privateKey);
 ```
 
 #### Create (Typed payload)
@@ -110,8 +121,8 @@ var token = AsymmetricToken.RS256.Create(payload, privateKey);
         
 public class JwtPayload
 {
-    [JsonPropertyName("uid")] 
-    public int UserId { get; set; }
+   [JsonPropertyName("uid")] 
+   public int UserId { get; set; }
 }
         
 var payload =  new JwtPayload
@@ -119,7 +130,7 @@ var payload =  new JwtPayload
     UserId = 123
 };
         
-var token = AsymmetricToken.RS256.Create(payload, privateKey);
+var token = JWT.RS256.Create(payload, privateKey);
 ```
 
 #### Validate
@@ -130,7 +141,8 @@ string publicKey = "@"MIIJKgIBAAKCAgEA9GF97STxVGbXpBFmudS/RRT58mfiR/+t2zb4f/uF3q
                        b3CtKwYPtGkQncSvba2HSurYArAxsCU2QeSAYbmCgtiXcF2Hw8Xt/ADY711iBDwq
                        .............................................
                        O9wqUEJy2v8xOMbHvMkoKLPLc590zGV88HNvzJHkF5N5HWTB9ZZEWcehf6RcTA==";
-if (AsymmetricToken.RS256.ValidateSignature("{YOUR_JWT_TOKEN}", publicKey))
+
+if (JWT.RS256.ValidateSignature("{YOUR_JWT_TOKEN}", publicKey))
 {
    // Token signature valid
 }
@@ -142,9 +154,9 @@ if (AsymmetricToken.RS256.ValidateSignature("{YOUR_JWT_TOKEN}", publicKey))
 string token = "{JWT-TOKEN}";
 
 // Default - untyped Dictionary<string, object>
-var tokenResult = AsymmetricToken.RS256.Read(token);
+var tokenResult = JWT.Read(token);
 var expiration = token.Exp();
 
 // You can map Jwt to your own model
-var tokenResult = AsymmetricToken.RS256.Read<CustomJwtModel>(token); 
+var tokenResult = JWT.Read<CustomJwtModel>(token); 
 ```

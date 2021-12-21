@@ -93,10 +93,10 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS256_Untyped_IsCorrect()
     {
-        var token = AsymmetricToken.RS256.Create(_untypedPayload, _privateKey, "kid1");
-        var isTokenValid = AsymmetricToken.RS256.ValidateSignature(token, _publicKey);
+        var token = JWT.RS256.Create(_untypedPayload, _privateKey, "kid1");
+        var isTokenValid = JWT.RS256.ValidateSignature(token, _publicKey);
 
-        var tokenData =  AsymmetricToken.RS256.Read(token);
+        var tokenData =  JWT.Read(token);
 
         var expiration = tokenData.Exp();
         
@@ -107,10 +107,10 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS256_Typed_IsCorrect()
     {
-        var token = AsymmetricToken.RS256.Create(_typedPayload, _privateKey, "kid1");
-        var isTokenValid = AsymmetricToken.RS256.ValidateSignature(token, _publicKey);
+        var token = JWT.RS256.Create(_typedPayload, _privateKey, "kid1");
+        var isTokenValid = JWT.RS256.ValidateSignature(token, _publicKey);
 
-        var tokenData =  AsymmetricToken.RS256.Read<JwtPayload>(token);
+        var tokenData =  JWT.Read<JwtPayload>(token);
 
         Assert.True(isTokenValid);
         Assert.Equal(123, tokenData.UserId);
@@ -121,10 +121,10 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS384_Untyped_IsCorrect()
     {
-        var token = AsymmetricToken.RS384.Create(_untypedPayload, _privateKey, "kid1");
-        var isTokenValid = AsymmetricToken.RS384.ValidateSignature(token, _publicKey);
+        var token = JWT.RS384.Create(_untypedPayload, _privateKey, "kid1");
+        var isTokenValid = JWT.RS384.ValidateSignature(token, _publicKey);
 
-        var tokenData = AsymmetricToken.RS384.Read(token);
+        var tokenData = JWT.Read(token);
 
         var expiration = tokenData.Exp();
         
@@ -135,10 +135,10 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS384_Typed_IsCorrect()
     {
-        var token = AsymmetricToken.RS384.Create(_typedPayload, _privateKey, "kid1");
-        var isTokenValid = AsymmetricToken.RS384.ValidateSignature(token, _publicKey);
+        var token = JWT.RS384.Create(_typedPayload, _privateKey, "kid1");
+        var isTokenValid = JWT.RS384.ValidateSignature(token, _publicKey);
 
-        var tokenData =  AsymmetricToken.RS384.Read<JwtPayload>(token);
+        var tokenData =  JWT.Read<JwtPayload>(token);
 
         Assert.True(isTokenValid);
         Assert.Equal(123, tokenData.UserId);
@@ -149,10 +149,10 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS512_Untyped_IsCorrect()
     {
-        var token = AsymmetricToken.RS512.Create(_untypedPayload, _privateKey, "kid1");
-        var isTokenValid = AsymmetricToken.RS512.ValidateSignature(token, _publicKey);
+        var token = JWT.RS512.Create(_untypedPayload, _privateKey, "kid1");
+        var isTokenValid = JWT.RS512.ValidateSignature(token, _publicKey);
 
-        var tokenData = AsymmetricToken.RS512.Read(token);
+        var tokenData = JWT.Read(token);
 
         var expiration = tokenData.Exp();
         
@@ -163,10 +163,10 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS512_Typed_IsCorrect()
     {
-        var token = AsymmetricToken.RS512.Create(_typedPayload, _privateKey, "kid1");
-        var isTokenValid = AsymmetricToken.RS512.ValidateSignature(token, _publicKey);
+        var token = JWT.RS512.Create(_typedPayload, _privateKey, "kid1");
+        var isTokenValid = JWT.RS512.ValidateSignature(token, _publicKey);
 
-        var tokenData =  AsymmetricToken.RS512.Read<JwtPayload>(token);
+        var tokenData =  JWT.Read<JwtPayload>(token);
 
         Assert.True(isTokenValid);
         Assert.Equal(123, tokenData.UserId);

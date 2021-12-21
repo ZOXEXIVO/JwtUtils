@@ -2,7 +2,7 @@
 using System.Buffers.Text;
 using System.Text;
 using JwtUtils.Exceptions;
-using JwtUtils.Utils.Strings;
+using JwtUtils.Utils;
 
 namespace JwtUtils;
 
@@ -13,7 +13,12 @@ internal class Payload
         var firstIndex = token.IndexOf('.');
         var lastIndex = token.LastIndexOf('.');
 
-        if (firstIndex >= lastIndex)
+        if (firstIndex == -1 || lastIndex == -1)
+        {
+            throw new JwtUtilsException("JWT is not well-formed");
+        }
+        
+        if (firstIndex == lastIndex)
         {
             throw new JwtUtilsException("JWT is not well-formed");
         }
