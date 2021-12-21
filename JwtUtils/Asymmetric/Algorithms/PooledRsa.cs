@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Security.Cryptography;
-using JwtUtils.Utils.Pools;
+using JwtUtils.Pools;
 
 namespace JwtUtils.Asymmetric.Algorithms;
 

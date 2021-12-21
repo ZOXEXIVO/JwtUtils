@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Text.Json;
-using JwtUtils.Utils.Strings;
+using JwtUtils.Utils;
 
 namespace JwtUtils;
 

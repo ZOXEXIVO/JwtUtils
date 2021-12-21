@@ -1,5 +1,5 @@
 ﻿using System;
-using JwtUtils.Utils.Strings;
+using JwtUtils.Utils;
 using Xunit;
 
 namespace JwtUtils.Tests.Extensions;

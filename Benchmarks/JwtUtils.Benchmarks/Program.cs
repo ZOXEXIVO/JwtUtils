@@ -6,7 +6,7 @@ namespace JwtUtils.Benchmarks
     {
         public static void Main(string[] args)
         {
-            BenchmarkRunner.Run<SymmetricBenchmarks>();
+            //BenchmarkRunner.Run<SymmetricBenchmarks>();
             BenchmarkRunner.Run<AsymmetricBenchmarks>();
         }
     }

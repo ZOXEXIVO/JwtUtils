@@ -2,6 +2,9 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using BenchmarkDotNet.Attributes;
+using JWT;
+using JWT.Algorithms;
+using JWT.Serializers;
 using Microsoft.IdentityModel.Tokens;
 
 namespace JwtUtils.Benchmarks;
@@ -9,7 +12,7 @@ namespace JwtUtils.Benchmarks;
 [MemoryDiagnoser]
 public class AsymmetricBenchmarks
 {
-     private static string PrivateKey = @"MIIJKgIBAAKCAgEA9GF97STxVGbXpBFmudS/RRT58mfiR/+t2zb4f/uF3qmYb/yu
+    private static string PrivateKey = @"MIIJKgIBAAKCAgEA9GF97STxVGbXpBFmudS/RRT58mfiR/+t2zb4f/uF3qmYb/yu
 oekYX5s17YPcIYshiX1XEN2gitHf3IcOOELRiNDSW1zrADzKFTeWzpji48IBObRf
 5Rda2Q4wIX6YUca/8eLvHcyOlDyCh0dfZNae2w/Ts8xda1TYC41rlD5rnQDgvsCK
 4fzfm39hCet+nMz4jLvRQ66aDs42qCBLK9cxRJcptsiR/pxmuJLC2jKz/PLjgrSC
@@ -71,17 +74,11 @@ JVtlccN8ujqAG/pk49vY80+OpKMGry+vBpO8LZpXkyzryW5vUSdhOgpfZIpU5QcO
 VNj1RNxmYEbUf+hd40MGzpTLOJxva880vpcu/BxLqi3xfOhLQrXTXRKRdBPr1yM1
 a9ku4ZoA7hOBuJawupx7v3oY+TZQ4tKUs554fg6zj87LUMgPEaozvMz8MWSlhnD1
 UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
-    
+
     private const string Rs256Token =
         "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImtpZCJ9.eyJleHAiOjE2Mzk5NDI2MTYsInVuYW1lIjoiaS5hLml2YW5vdiIsImF1ZCI6WyIxMjIiLCIxMjMiXX0.O9CSuYOPlQ3mIAyTjUio5xeG5ErkI7NalvjlOUXU3kN-kheuGsjxEGPWOcaddPv_UkI2DHvi88W50Ex-lTiMb0Pq3ImU2vZes_k46rlXI4ln55dP5U1neNvJNofQ8OuTpFwQj8tzEKzfc96WRqO-HSSRFWItMLl2Ypkesnc9kA-mmGdB3PJs9kYasqz4zrDd5OIuH5msj7YnUi8Dj1Nc0MP-x2pKSqsfp-1zmm2EqUtS9VXYrrVE5z-7oXd6304FmQawpoXsDU8KimR-KXEnlk6GSNkRA9f67efqu-0J3A2GWe-rPoC-nnQzUph9xtCRFwYS-G9zpYkQ-kOYZe0lmrjtB5X1sQz-v1yNBqciMPvqNtN3o7aklta40O1ImfIY_03uLZZYVsYkHz9J7TZvf7Wt8I8wzHB1HtenCHYFOPvNcjBOVrzHCWWssEYoUA7jqm6vu_Decr_PExoyLJt1fLwxYqWdl-sBc5-P1Rup7ZT2pQsBWp2wIs6_tkAvjM0cLOR_HXC9KFTh2qPc5L4Ez7ac8krYyYsglfVIcIsTeyctAM2dWB7ctXet3vwpSlNMRmH3O-yZKq-DFeDhBTiU2j9zbUh_icj5QHSu0zbOpAnfd2RC5ffKpLyLO4kCKSV_d_hpNcZYURgjy2tpmWTWe-bZn7YGwRNspkANLiCjAOQ";
-    
-    private const string Rs384Token =
-        "eyJhbGciOiJSUzM4NCIsInR5cCI6IkpXVCIsImtpZCI6ImtpZCJ9.eyJleHAiOjE2Mzk5NDI2MTYsInVuYW1lIjoiaS5hLml2YW5vdiIsImF1ZCI6WyIxMjIiLCIxMjMiXX0.ygw_FhraeO7zV3WQ7iuoDQr1--XM9QNMyuoqWhF7E78oSLM2CO33-2GCu3nTOVf9RAJOE_oFqFGFQozDOPkMGRUAQG44FHW5moSMurRv60qGOF1Pk8lvpjw-yaY3JNytr4QOySr0rKwlc5xJQ4TzrXkdSSQ1Y74g1qGjfne7JK4ONm56zAnSe8ZIRWj_B1uB0BwBr6OVKdACNne39szxYfPJLLDPLWbDT-IrzjmxdqzipkRrIz5UtxWuiRqB3M7Zc4owuKrP4yj8iVn52p5nvXv8YQ3ltFcfmReY41k65bECiTrmj8-ijDMB-Wh2A900NOeQoazB87mBS0xki-ZH03b3eShS6IlqubhQks2NfHTS7FUqHfmStkO7bjN7D3YmyFXM0jpaUFv7Uj_darstRi-xek2V02XIDZX2HS5RhJbgelL3FMa1y7LxJ8SFlYgcHWgSW4b0WhlqWsoux5FZAHypsDOPf3I0jnm3B5dMNuGBMhjSI-LCfKOplFt2vM-2nCJo247Um7g1kRqHrz9mUIa1_HQ4qjkGN6cK8z-oXfd-YZf7CmRESJ0M6GjgEZ6YewV8p76tP1n-fwMNWoEMx7U_DUYyIIqQiCnEy9pCF_e98GvZuBQAKBl-aEAnwxW5QF4xAczaWQnJaA-ZXjZwfMm5j7By_-cFrD0JPyLvxCY";
 
-    private const string Rs512Token =
-        "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCIsImtpZCI6ImtpZCJ9.eyJleHAiOjE2Mzk5NDI2MTYsInVuYW1lIjoiaS5hLml2YW5vdiIsImF1ZCI6WyIxMjIiLCIxMjMiXX0.KabW0FRZINLv7_QGbju60b55CBvALc8uI6RTrswG6lbFFzLjJ-mRabrRJy9_MaXcdKmBRCaaO4jeDF0f9eWgW9VlD5l6o-rD4y1ppkDVePo0JLlZ4U3MbozDQTsQADemPBB7qzgymmZHGPa-OD3OG3jUF3ZOHRhSmk4PgwXDwVHYFfsQiK1hyNV6F0WCsT3aKIDQlQEE7FxDvf162_gdD_PKhfznwb3TFp1JwB_EvxGaNDDhcLzjBuFvSctH6-VJ3I9A4Wi2KD__zkiSKhA3qvsLh8Oo30nJ2El1H3BsbZsIGQAK10FZV720gQbkLFuiwe_2B9otxHU0pb9HANjpsOvRrDAY59dMzFoQjHMqyVm-p_EqvDl8ClJFZlSO7Ck2wN5SIvVmZoCY4_xsEEj3LhE-IOnguKDyWjAcSMhq-Syh1ZPnG4KYrScMX9jc5jARSQ6sbjK2t656q-jbOqXFErBRmENs9PaGn0-3vj0kwmY3bZQH47Fj5H5Tcaq_mKWbIxB3yL8-PunEwylTKkYPIMIZOsc1E5cuRBq2VIZ_yTdYq7syukrHp6xmEy_E9sPc6dskSluMbDogQsT1xkN6mYZgKVoMNl6r6N2UT2EyK9-dqH-ecQZSSEBCuWOEImz3cHrPsiq6CVzidfkgtMg0W9qWxMYOsM50TRFJthanIfc";
-    
-    private readonly Dictionary<string, object> _claims = new()
+    private static readonly Dictionary<string, object> _payload = new()
     {
         { "exp", 1639942616 },
         { "uname", "i.a.ivanov" },
@@ -90,81 +87,61 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
         { "claim3", "claim3_value" }
     };
 
+    // JwtUtils
+
     [Benchmark]
     public string JwtUtils_RS256_Create()
     {
-        return JwtUtils.AsymmetricToken.RS256.Create(_claims, PrivateKey);
+        return JWT.RS256.Create(_payload, PrivateKey);
     }
 
-    
-    [Benchmark]
-    public string JwtUtils_RS384_Create()
-    {
-        return JwtUtils.AsymmetricToken.RS384.Create(_claims, PrivateKey);
-    }
-    
+    // JWT
 
-    [Benchmark]
-    public string JwtUtils_RS512_Create()
-    {
-        return JwtUtils.AsymmetricToken.RS512.Create(_claims, PrivateKey);
-    }
+    private static readonly IJwtAlgorithm Algorithm = new RS256Algorithm(CreateRSA_Public(), CreateRSA_Private());
+    private static readonly IJsonSerializer Serializer = new JsonNetSerializer();
+    private static readonly IBase64UrlEncoder UrlEncoder = new JwtBase64UrlEncoder();
+    private static readonly IJwtEncoder Encoder = new JwtEncoder(Algorithm, Serializer, UrlEncoder);
     
-    private static RSA CreateRSA()
+    [Benchmark]
+    public string JWT_RS256_Create()
+    {
+        return Encoder.Encode(_payload, PrivateKey);
+    }
+
+    // JwtSecurityTokenHandler
+
+    private static RSA CreateRSA_Private()
     {
         var rsa = RSA.Create();
         rsa.ImportRSAPrivateKey(Convert.FromBase64String(PrivateKey), out _);
         return rsa;
     }
+
+    private static RSA CreateRSA_Public()
+    {
+        var rsa = RSA.Create();
+        rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(PublicKey), out _);
+        return rsa;
+    }
     
-    static readonly RsaSecurityKey SecurityKey = new(CreateRSA())
+    static readonly RsaSecurityKey SecurityKey = new(CreateRSA_Private())
     {
         KeyId = "kid"
     };
 
     static readonly SigningCredentials Credentials256 = new(SecurityKey, SecurityAlgorithms.RsaSha256Signature);
-    static readonly SigningCredentials Credentials384 = new(SecurityKey, SecurityAlgorithms.RsaSha384Signature);
-    static readonly SigningCredentials Credentials512 = new(SecurityKey, SecurityAlgorithms.RsaSha512Signature);
 
+    private static JwtSecurityToken TokenSecurityToken = new("123", "1234", new List<Claim>
+    {
+        new("uname", "i.a.ivanov"),
+        new("claim1", "claim1_value"),
+        new("claim2", "claim2_value"),
+        new("claim3", "claim3_value"),
+    }, null, null, Credentials256);
+    
     [Benchmark]
     public string JwtSecurityTokenHandler_RS256_Create()
     {
-        var token = new JwtSecurityToken("123", "1234", new List<Claim>
-        {
-            new("uname", "i.a.ivanov"),
-            new("claim1", "claim1_value"),
-            new("claim2", "claim2_value"),
-            new("claim3", "claim3_value"),
-        }, null, null, Credentials256);
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-    
-    [Benchmark]
-    public string JwtSecurityTokenHandler_RS384_Create()
-    {
-        var token = new JwtSecurityToken("123", "1234", new List<Claim>
-        {
-            new("uname", "i.a.ivanov"),
-            new("claim1", "claim1_value"),
-            new("claim2", "claim2_value"),
-            new("claim3", "claim3_value"),
-        }, null, null, Credentials384);
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-    
-    [Benchmark]
-    public string JwtSecurityTokenHandler_RS512_Create()
-    {
-        var token = new JwtSecurityToken("123", "1234", new List<Claim>
-        {
-            new("uname", "i.a.ivanov"),
-            new("claim1", "claim1_value"),
-            new("claim2", "claim2_value"),
-            new("claim3", "claim3_value"),
-        }, null, null, Credentials512);
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return new JwtSecurityTokenHandler().WriteToken(TokenSecurityToken);
     }
 }

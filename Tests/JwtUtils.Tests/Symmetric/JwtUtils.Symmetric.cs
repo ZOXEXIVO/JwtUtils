@@ -32,10 +32,10 @@ public class Symmetric
     [Fact]
     public void JwtUtils_HS256_Untyped_IsCorrect()
     {
-        var token = SymmetricToken.HS256.Create(_untypedPayload, tokenSecret, "kid1");
-        var isTokenValid = SymmetricToken.HS256.ValidateSignature(token, tokenSecret);
+        var token = JWT.HS256.Create(_untypedPayload, tokenSecret, "kid1");
+        var isTokenValid = JWT.HS256.ValidateSignature(token, tokenSecret);
 
-        var tokenData = SymmetricToken.HS256.Read(token);
+        var tokenData = JWT.Read(token);
 
         var expiration = tokenData.Exp();
         
@@ -46,10 +46,10 @@ public class Symmetric
     [Fact]
     public void JwtUtils_HS256_Typed_IsCorrect()
     {
-        var token = SymmetricToken.HS256.Create(_typedPayload, tokenSecret, "kid1");
-        var isTokenValid = SymmetricToken.HS256.ValidateSignature(token, tokenSecret);
+        var token = JWT.HS256.Create(_typedPayload, tokenSecret, "kid1");
+        var isTokenValid = JWT.HS256.ValidateSignature(token, tokenSecret);
 
-        var tokenData = SymmetricToken.HS256.Read<JwtPayload>(token);
+        var tokenData = JWT.Read<JwtPayload>(token);
 
         Assert.True(isTokenValid);
         
@@ -61,10 +61,10 @@ public class Symmetric
     [Fact]
     public void JwtUtils_HS384_Untyped_IsCorrect()
     {
-        var token = SymmetricToken.HS384.Create(_untypedPayload, tokenSecret, "kid1");
-        var isTokenValid = SymmetricToken.HS384.ValidateSignature(token, tokenSecret);
+        var token = JWT.HS384.Create(_untypedPayload, tokenSecret, "kid1");
+        var isTokenValid = JWT.HS384.ValidateSignature(token, tokenSecret);
 
-        var tokenData = JwtUtils.SymmetricToken.HS384.Read(token);
+        var tokenData = JwtUtils.JWT.Read(token);
 
         var expiration = tokenData.Exp();
         
@@ -75,10 +75,10 @@ public class Symmetric
     [Fact]
     public void JwtUtils_HS384_Typed_IsCorrect()
     {
-        var token = SymmetricToken.HS384.Create(_typedPayload, tokenSecret, "kid1");
-        var isTokenValid = SymmetricToken.HS384.ValidateSignature(token, tokenSecret);
+        var token = JWT.HS384.Create(_typedPayload, tokenSecret, "kid1");
+        var isTokenValid = JWT.HS384.ValidateSignature(token, tokenSecret);
 
-        var tokenData = SymmetricToken.HS384.Read<JwtPayload>(token);
+        var tokenData = JWT.Read<JwtPayload>(token);
 
         Assert.True(isTokenValid);
         
@@ -90,10 +90,10 @@ public class Symmetric
     [Fact]
     public void JwtUtils_HS512_Untyped_IsCorrect()
     {
-        var token = SymmetricToken.HS512.Create(_untypedPayload, tokenSecret, "kid1");
-        var isTokenValid = SymmetricToken.HS512.ValidateSignature(token, tokenSecret);
+        var token = JWT.HS512.Create(_untypedPayload, tokenSecret, "kid1");
+        var isTokenValid = JWT.HS512.ValidateSignature(token, tokenSecret);
 
-        var tokenData = SymmetricToken.HS512.Read(token);
+        var tokenData = JWT.Read(token);
 
         var expiration = tokenData.Exp();
         
@@ -104,10 +104,10 @@ public class Symmetric
     [Fact]
     public void JwtUtils_HS512_Typed_IsCorrect()
     {
-        var token = SymmetricToken.HS512.Create(_typedPayload, tokenSecret, "kid1");
-        var isTokenValid = SymmetricToken.HS512.ValidateSignature(token, tokenSecret);
+        var token = JWT.HS512.Create(_typedPayload, tokenSecret, "kid1");
+        var isTokenValid = JWT.HS512.ValidateSignature(token, tokenSecret);
 
-        var tokenData = SymmetricToken.HS512.Read<JwtPayload>(token);
+        var tokenData = JWT.Read<JwtPayload>(token);
 
         Assert.True(isTokenValid);
         
