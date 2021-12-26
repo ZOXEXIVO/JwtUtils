@@ -2,8 +2,8 @@
 using System.Security.Cryptography;
 using System.Text;
 using JwtUtils.Exceptions;
+using JwtUtils.Pools;
 using JwtUtils.Symmetric.Constants;
-using JwtUtils.Utils.Pools;
 
 namespace JwtUtils.Symmetric.Algorithms;
 

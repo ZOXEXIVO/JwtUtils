@@ -2,7 +2,8 @@
 
 namespace JwtUtils;
 
-public static partial class AsymmetricToken
+// ReSharper disable once InconsistentNaming
+public static partial class JWT
 {
     // ReSharper disable once InconsistentNaming
     public static partial class RS256
@@ -18,9 +19,32 @@ public static partial class AsymmetricToken
     public static partial class RS512
     {
     }
+    
+    /// <summary>
+    /// Read token payload to Dictionary(string,object)
+    /// </summary>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    public static Dictionary<string, object> Read(ReadOnlySpan<char> token)
+    {
+        // ReSharper disable once ArrangeStaticMemberQualifier
+        return PayloadExt.ReadPayload<Dictionary<string, object>>(token);
+    }
+
+    /// <summary>
+    /// Read token payload to your custom type object with System.Text.Json
+    /// </summary>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    public static T Read<T>(ReadOnlySpan<char> token)
+    {
+        // ReSharper disable once ArrangeStaticMemberQualifier
+        return PayloadExt.ReadPayload<T>(token);
+    }
 }
     
-public static partial class SymmetricToken
+// ReSharper disable once InconsistentNaming
+public static partial class JWT
 {
     // ReSharper disable once InconsistentNaming
     public static partial class HS256
@@ -38,7 +62,7 @@ public static partial class SymmetricToken
     }
 }
 
-public class PayloadExt
+internal class PayloadExt
 {
     public static T ReadPayload<T>(ReadOnlySpan<char> token)
     {

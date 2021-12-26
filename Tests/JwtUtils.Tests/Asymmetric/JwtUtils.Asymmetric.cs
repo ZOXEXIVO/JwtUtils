@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JwtUtils.Extensions;
+using JwtUtils.Tests.Common;
 using Xunit;
 
 namespace JwtUtils.Tests.Asymmetric;
@@ -69,7 +70,7 @@ VNj1RNxmYEbUf+hd40MGzpTLOJxva880vpcu/BxLqi3xfOhLQrXTXRKRdBPr1yM1
 a9ku4ZoA7hOBuJawupx7v3oY+TZQ4tKUs554fg6zj87LUMgPEaozvMz8MWSlhnD1
 UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     
-    readonly Dictionary<string, object> _payload = new()
+    readonly Dictionary<string, object> _untypedPayload = new()
     {
         { "exp", 1639942616 },
         { "uname", "i.a.ivanov" },
@@ -81,14 +82,21 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
             }
         }
     };
+    
+    private readonly JwtPayload _typedPayload = new()
+    {
+        UserId = 123,
+        UserLogin = "userLogin",
+        Expiration = 12345
+    };
 
     [Fact]
-    public void JwtUtils_RS256_IsCorrect()
+    public void JwtUtils_RS256_Untyped_IsCorrect()
     {
-        var token = JwtUtils.AsymmetricToken.RS256.Create(_payload, _privateKey, "kid1");
-        var isTokenValid = JwtUtils.AsymmetricToken.RS256.ValidateSignature(token, _publicKey);
+        var token = JWT.RS256.Create(_untypedPayload, _privateKey, "kid1");
+        var isTokenValid = JWT.RS256.ValidateSignature(token, _publicKey);
 
-        var tokenData =  JwtUtils.AsymmetricToken.RS384.Read(token);
+        var tokenData =  JWT.Read(token);
 
         var expiration = tokenData.Exp();
         
@@ -97,12 +105,26 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     }
     
     [Fact]
-    public void JwtUtils_RS384_IsCorrect()
+    public void JwtUtils_RS256_Typed_IsCorrect()
     {
-        var token = JwtUtils.AsymmetricToken.RS384.Create(_payload, _privateKey, "kid1");
-        var isTokenValid = JwtUtils.AsymmetricToken.RS384.ValidateSignature(token, _publicKey);
+        var token = JWT.RS256.Create(_typedPayload, _privateKey, "kid1");
+        var isTokenValid = JWT.RS256.ValidateSignature(token, _publicKey);
 
-        var tokenData = JwtUtils.AsymmetricToken.RS384.Read(token);
+        var tokenData =  JWT.Read<JwtPayload>(token);
+
+        Assert.True(isTokenValid);
+        Assert.Equal(123, tokenData.UserId);
+        Assert.Equal("userLogin", tokenData.UserLogin);
+        Assert.Equal(12345, tokenData.Expiration);
+    }
+    
+    [Fact]
+    public void JwtUtils_RS384_Untyped_IsCorrect()
+    {
+        var token = JWT.RS384.Create(_untypedPayload, _privateKey, "kid1");
+        var isTokenValid = JWT.RS384.ValidateSignature(token, _publicKey);
+
+        var tokenData = JWT.Read(token);
 
         var expiration = tokenData.Exp();
         
@@ -111,16 +133,44 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     }
     
     [Fact]
-    public void JwtUtils_RS512_IsCorrect()
+    public void JwtUtils_RS384_Typed_IsCorrect()
     {
-        var token = JwtUtils.AsymmetricToken.RS512.Create(_payload, _privateKey, "kid1");
-        var isTokenValid = JwtUtils.AsymmetricToken.RS512.ValidateSignature(token, _publicKey);
+        var token = JWT.RS384.Create(_typedPayload, _privateKey, "kid1");
+        var isTokenValid = JWT.RS384.ValidateSignature(token, _publicKey);
 
-        var tokenData = JwtUtils.AsymmetricToken.RS512.Read(token);
+        var tokenData =  JWT.Read<JwtPayload>(token);
+
+        Assert.True(isTokenValid);
+        Assert.Equal(123, tokenData.UserId);
+        Assert.Equal("userLogin", tokenData.UserLogin);
+        Assert.Equal(12345, tokenData.Expiration);
+    }
+    
+    [Fact]
+    public void JwtUtils_RS512_Untyped_IsCorrect()
+    {
+        var token = JWT.RS512.Create(_untypedPayload, _privateKey, "kid1");
+        var isTokenValid = JWT.RS512.ValidateSignature(token, _publicKey);
+
+        var tokenData = JWT.Read(token);
 
         var expiration = tokenData.Exp();
         
         Assert.True(isTokenValid);
         Assert.Equal(1639942616, expiration);
+    }
+    
+    [Fact]
+    public void JwtUtils_RS512_Typed_IsCorrect()
+    {
+        var token = JWT.RS512.Create(_typedPayload, _privateKey, "kid1");
+        var isTokenValid = JWT.RS512.ValidateSignature(token, _publicKey);
+
+        var tokenData =  JWT.Read<JwtPayload>(token);
+
+        Assert.True(isTokenValid);
+        Assert.Equal(123, tokenData.UserId);
+        Assert.Equal("userLogin", tokenData.UserLogin);
+        Assert.Equal(12345, tokenData.Expiration);
     }
 }

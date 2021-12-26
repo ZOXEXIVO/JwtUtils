@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace JwtUtils.Utils.Pools;
+namespace JwtUtils.Pools;
 
 internal class ObjectPool<T>
 {

@@ -1,10 +1,9 @@
 ﻿using System.Buffers;
 using System.Buffers.Text;
-using System.Runtime.CompilerServices;
 using System.Text;
 using JwtUtils.Exceptions;
 
-namespace JwtUtils.Utils.Strings;
+namespace JwtUtils.Utils;
 
 internal static class Base64Utils
 {
