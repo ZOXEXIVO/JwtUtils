@@ -9,7 +9,7 @@ namespace JwtUtils.Asymmetric;
 
 internal class AsymmetricSignature
 {
-    public static (IMemoryOwner<char> Memory, int Bytes) FromPrivatePem(ReadOnlySpan<char> payload, string privatePemKey, string algorithm)
+    public static (IMemoryOwner<char> Memory, int Bytes) FromRSA(ReadOnlySpan<char> payload, RSA rsaAlgorithm, string algorithm)
     {
         var maxBytesCount = Encoding.UTF8.GetMaxByteCount(payload.Length);
 
@@ -19,15 +19,13 @@ internal class AsymmetricSignature
         {
             byteBuffer = ArrayPool<byte>.Shared.Rent(maxBytesCount);
 
-            using var rsaAlgorithm = Algorithms.PooledRsa.GetPrivateRsa(privatePemKey);
-
-            Span<byte> hashBuffer = stackalloc byte[rsaAlgorithm.PooledObject.KeySize];
+            Span<byte> hashBuffer = stackalloc byte[rsaAlgorithm.KeySize];
 
             var bytesRetrieved = Encoding.UTF8.GetBytes(payload, byteBuffer);
 
             var actualBuffer = byteBuffer.AsSpan().Slice(0, bytesRetrieved);
 
-            if (!rsaAlgorithm.PooledObject.TrySignData(actualBuffer, hashBuffer,  GetAlgorithm(), RSASignaturePadding.Pkcs1, out var hashBytesWritten))
+            if (!rsaAlgorithm.TrySignData(actualBuffer, hashBuffer, GetAlgorithm(algorithm), RSASignaturePadding.Pkcs1, out var hashBytesWritten))
             {
                 throw new JwtUtilsException($"Compute hash with algorithm {algorithm} failed");
             }
@@ -49,8 +47,8 @@ internal class AsymmetricSignature
                 ArrayPool<byte>.Shared.Return(byteBuffer);
             }
         }
-
-        HashAlgorithmName GetAlgorithm()
+        
+        HashAlgorithmName GetAlgorithm(string algorithm)
         {
             switch (algorithm)
             {
@@ -65,7 +63,7 @@ internal class AsymmetricSignature
             throw new JwtUtilsException($"Unknown RSA algorithm: {algorithm}");
         }
     }
-    
+
     public static bool ValidateSignature(ReadOnlySpan<char> payload, ReadOnlySpan<char> signature, string publicPemKey, string algorithm)
     {
         byte[] payloadBuffer = null;

@@ -1,7 +1,9 @@
 ﻿// ReSharper disable once CheckNamespace
 
 using System.Buffers;
+using System.Security.Cryptography;
 using JwtUtils.Asymmetric;
+using JwtUtils.Asymmetric.Algorithms;
 using JwtUtils.Asymmetric.Constants;
 using JwtUtils.Extensions;
 using JwtUtils.Utils;
@@ -28,6 +30,37 @@ public static partial class JWT
             string kid = null)
         {
             var jsonSerializedPayload = tokenPayload.ToJson();
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateAsymmetric(jsonSerializedPayload, privatePemKey, Algorithm, kid);
+        }
+
+        /// <summary>
+        /// Create token from Dictionary(string, object) payload
+        /// </summary>
+        /// <param name="tokenPayload"></param>
+        /// <param name="rsa"></param>
+        /// <param name="kid"></param>
+        /// <returns></returns>
+        public static string Create(Dictionary<string, object> tokenPayload, RSA rsa,
+            string kid = null)
+        {
+            var jsonSerializedPayload = tokenPayload.ToJson();
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateAsymmetric(jsonSerializedPayload, rsa, Algorithm, kid);
+        }
+        
+        /// <summary>
+        /// Create token with typed object that will be serialized with System.Text.Json 
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <param name="privatePemKey"></param>
+        /// <param name="kid"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static string Create<T>(T payload, string privatePemKey, string kid = null)
+        {
+            var jsonSerializedPayload = payload.ToJson();
+            // ReSharper disable once ArrangeStaticMemberQualifier
             return JWT.CreateAsymmetric(jsonSerializedPayload, privatePemKey, Algorithm, kid);
         }
 
@@ -35,16 +68,17 @@ public static partial class JWT
         /// Create token with typed object that will be serialized with System.Text.Json 
         /// </summary>
         /// <param name="payload"></param>
-        /// <param name="tokenSecret"></param>
+        /// <param name="rsa"></param>
         /// <param name="kid"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static string Create<T>(T payload, string tokenSecret, string kid = null)
+        public static string Create<T>(T payload, RSA rsa, string kid = null)
         {
             var jsonSerializedPayload = payload.ToJson();
-            return JWT.CreateAsymmetric(jsonSerializedPayload, tokenSecret, Algorithm, kid);
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateAsymmetric(jsonSerializedPayload, rsa, Algorithm, kid);
         }
-
+        
         /// <summary>
         /// Create token with string payload AS IS
         /// </summary>
@@ -55,8 +89,22 @@ public static partial class JWT
         /// <returns></returns>
         public static string Create(string rawPayload, string privatePemKey, string kid = null)
         {
-            if (privatePemKey == null) throw new ArgumentNullException(nameof(privatePemKey));
+            // ReSharper disable once ArrangeStaticMemberQualifier
             return JWT.CreateAsymmetric(rawPayload, privatePemKey, Algorithm, kid);
+        }
+        
+        /// <summary>
+        /// Create token with string payload AS IS
+        /// </summary>
+        /// <param name="rsa"></param>
+        /// <param name="kid"></param>
+        /// <param name="rawPayload"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static string Create(string rawPayload, RSA rsa, string kid = null)
+        {
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateAsymmetric(rawPayload, rsa, Algorithm, kid);
         }
         
         /// <summary>
@@ -92,21 +140,53 @@ public static partial class JWT
             // ReSharper disable once ArrangeStaticMemberQualifier
             return JWT.CreateAsymmetric(jsonSerializedPayload, privatePemKey, Algorithm, kid);
         }
+        
+        /// <summary>
+        /// Create token from Dictionary(string, object) payload
+        /// </summary>
+        /// <param name="tokenPayload"></param>
+        /// <param name="rsa"></param>
+        /// <param name="kid"></param>
+        /// <returns></returns>
+        public static string Create(Dictionary<string, object> tokenPayload, RSA rsa,
+            string kid = null)
+        {
+            var jsonSerializedPayload = tokenPayload.ToJson();
+            
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateAsymmetric(jsonSerializedPayload, rsa, Algorithm, kid);
+        }
 
         /// <summary>
         /// Create token with typed object that will be serialized with System.Text.Json 
         /// </summary>
         /// <param name="payload"></param>
-        /// <param name="tokenSecret"></param>
+        /// <param name="privatePemKey"></param>
         /// <param name="kid"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static string Create<T>(T payload, string tokenSecret, string kid = null)
+        public static string Create<T>(T payload, string privatePemKey, string kid = null)
         {
             var jsonSerializedPayload = payload.ToJson();
             
             // ReSharper disable once ArrangeStaticMemberQualifier
-            return JWT.CreateAsymmetric(jsonSerializedPayload, tokenSecret, Algorithm, kid);
+            return JWT.CreateAsymmetric(jsonSerializedPayload, privatePemKey, Algorithm, kid);
+        }
+        
+        /// <summary>
+        /// Create token with typed object that will be serialized with System.Text.Json 
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <param name="rsa"></param>
+        /// <param name="kid"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static string Create<T>(T payload, RSA rsa, string kid = null)
+        {
+            var jsonSerializedPayload = payload.ToJson();
+            
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateAsymmetric(jsonSerializedPayload, rsa, Algorithm, kid);
         }
         
         /// <summary>
@@ -122,6 +202,21 @@ public static partial class JWT
             // ReSharper disable once ArrangeStaticMemberQualifier
             return JWT.CreateAsymmetric(rawPayload, privatePemKey, Algorithm, kid);
         }
+        
+        /// <summary>
+        /// Create token with string payload AS IS
+        /// </summary>
+        /// <param name="rsa"></param>
+        /// <param name="kid"></param>
+        /// <param name="rawPayload"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static string Create(string rawPayload, RSA rsa, string kid = null)
+        {
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateAsymmetric(rawPayload, rsa, Algorithm, kid);
+        }
+
 
         /// <summary>
         /// Validate token signature
@@ -158,19 +253,51 @@ public static partial class JWT
         }
 
         /// <summary>
+        /// Create token from Dictionary(string, object) payload
+        /// </summary>
+        /// <param name="tokenPayload"></param>
+        /// <param name="rsa"></param>
+        /// <param name="kid"></param>
+        /// <returns></returns>
+        public static string Create(Dictionary<string, object> tokenPayload, RSA rsa,
+            string kid = null)
+        {
+            var jsonSerializedPayload = tokenPayload.ToJson();
+            
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateAsymmetric(jsonSerializedPayload, rsa, Algorithm, kid);
+        }
+        
+        /// <summary>
         /// Create token with typed object that will be serialized with System.Text.Json 
         /// </summary>
         /// <param name="payload"></param>
-        /// <param name="tokenSecret"></param>
+        /// <param name="privatePemKey"></param>
         /// <param name="kid"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static string Create<T>(T payload, string tokenSecret, string kid = null)
+        public static string Create<T>(T payload, string privatePemKey, string kid = null)
         {
             var jsonSerializedPayload = payload.ToJson();
             
             // ReSharper disable once ArrangeStaticMemberQualifier
-            return JWT.CreateAsymmetric(jsonSerializedPayload, tokenSecret, Algorithm, kid);
+            return JWT.CreateAsymmetric(jsonSerializedPayload, privatePemKey, Algorithm, kid);
+        }
+        
+        /// <summary>
+        /// Create token with typed object that will be serialized with System.Text.Json 
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <param name="rsa"></param>
+        /// <param name="kid"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static string Create<T>(T payload, RSA rsa, string kid = null)
+        {
+            var jsonSerializedPayload = payload.ToJson();
+            
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateAsymmetric(jsonSerializedPayload, rsa, Algorithm, kid);
         }
         
         /// <summary>
@@ -186,6 +313,20 @@ public static partial class JWT
             // ReSharper disable once ArrangeStaticMemberQualifier
             return JWT.CreateAsymmetric(rawPayload, privatePemKey, Algorithm, kid);
         }
+        
+        /// <summary>
+        /// Create token with string payload AS IS
+        /// </summary>
+        /// <param name="rsa"></param>
+        /// <param name="kid"></param>
+        /// <param name="rawPayload"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static string Create(string rawPayload, RSA rsa, string kid = null)
+        {
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            return JWT.CreateAsymmetric(rawPayload, rsa, Algorithm, kid);
+        }
 
         /// <summary>
         /// Validate token signature
@@ -200,7 +341,7 @@ public static partial class JWT
         }
     }
 
-    private static string CreateAsymmetric(ReadOnlySpan<char> tokenPayload, string privatePemKey, string algorithm,
+    private static string CreateAsymmetric(ReadOnlySpan<char> tokenPayload, RSA rsaAlgorithm, string algorithm,
         string kid)
     {
         var header = Header.Create(algorithm, kid);
@@ -227,7 +368,7 @@ public static partial class JWT
 
                 var signaturePayload = headerPayloadBuffer.Memory.Span.Slice(0, signaturePayloadLength);
 
-                var signature = AsymmetricSignature.FromPrivatePem(signaturePayload, privatePemKey, algorithm);
+                var signature = AsymmetricSignature.FromRSA(signaturePayload, rsaAlgorithm, algorithm);
                 using (signature.Memory)
                 {
                     int tokenLength = signaturePayloadLength + 1 + signature.Bytes;
@@ -249,6 +390,13 @@ public static partial class JWT
                 }
             }
         }
+    }
+
+    private static string CreateAsymmetric(ReadOnlySpan<char> tokenPayload, string privatePemKey, string algorithm,
+        string kid)
+    {
+        using var rsaAlgorithm = PooledRsa.GetPrivateRsa(privatePemKey);
+        return CreateAsymmetric(tokenPayload, rsaAlgorithm.PooledObject, algorithm, kid);
     }
 
     private static bool ValidateAsymmetric(ReadOnlySpan<char> token, string publicPemKey, string algorithm)

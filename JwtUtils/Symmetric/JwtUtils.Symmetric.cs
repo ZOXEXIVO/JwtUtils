@@ -151,6 +151,7 @@ public static partial class JWT
         public static string Create(Dictionary<string, object> tokenPayload, string tokenSecret, string kid = null)
         {
             var jsonSerializedPayload = tokenPayload.ToJson();
+            // ReSharper disable once ArrangeStaticMemberQualifier
             return JWT.CreateSymmetric(jsonSerializedPayload, tokenSecret, Algorithm, kid);
         }
 
@@ -165,7 +166,6 @@ public static partial class JWT
         public static string Create<T>(T payload, string tokenSecret, string kid = null)
         {
             var jsonSerializedPayload = payload.ToJson();
-            
             // ReSharper disable once ArrangeStaticMemberQualifier
             return JWT.CreateSymmetric(jsonSerializedPayload, tokenSecret, Algorithm, kid);
         }
