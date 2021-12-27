@@ -15,6 +15,15 @@ Symmetric: **HS256, HS384, HS512**
 
 Asymmetric: **RS256, RS384, RS512**
 
+How to generate RSA key?
+
+```
+ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key
+
+Don't add passphrase
+
+openssl rsa -in jwtRS256.key -pubout -outform PEM -out jwtRS256.key.pub
+```
 
 ### Benchmarks:
 
