@@ -7,7 +7,10 @@ Fastest, low-allocation, simple API library to work with JWT-tokens
 It wrap most useful API to work with JWT (Create, Validate, Read)
 
 Now you don't need to use strange and inconvenient API in other packages<br/><br/>
-
+Just install package from **Nuget**:
+```
+Install-Package JwtUtils
+```
 
 ##### Available algorithms: 
 
