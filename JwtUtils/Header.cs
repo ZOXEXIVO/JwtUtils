@@ -1,6 +1,9 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Buffers;
+using System.Collections.Concurrent;
 using System.Text.Json;
+using JwtUtils.Exceptions;
 using JwtUtils.Utils;
+using Microsoft.IO;
 
 namespace JwtUtils;
 
@@ -8,6 +11,20 @@ internal class Header
 {
     private static readonly ConcurrentDictionary<string, string> HeadersCache = new();
 
+    private const int BlockSize = 1024;
+    private const int LargeBufferMultiple = 1024 * 1024;
+    private const int MaximumBufferSize = 16 * LargeBufferMultiple;
+    private const int MaximumFreeLargePoolBytes = MaximumBufferSize * 4;
+    private const int MaximumFreeSmallPoolBytes = 250 * BlockSize;
+    
+    private static readonly RecyclableMemoryStreamManager PoolManager = new(BlockSize, LargeBufferMultiple, MaximumBufferSize)
+    { 
+        AggressiveBufferReturn = true,
+        GenerateCallStacks = false,
+        MaximumFreeLargePoolBytes = MaximumFreeLargePoolBytes,
+        MaximumFreeSmallPoolBytes = MaximumFreeSmallPoolBytes
+    }; 
+    
     /// <summary>
     /// Create fixed for web JwtHeader
     /// No need low-allocation optimizations, because it cached
@@ -21,11 +38,11 @@ internal class Header
             
         static string CreateInner(string algorithm, string kid)
         {
-            using var memoryStream = new MemoryStream();
+            using var pooledOutputStream = PoolManager.GetStream();
 
-            long dataLength = 0;
+            long dataLength;
             
-            using (var jsonWriter = new Utf8JsonWriter(memoryStream))
+            using (var jsonWriter = new Utf8JsonWriter(pooledOutputStream))
             {
                 jsonWriter.WriteStartObject();
                     
@@ -44,7 +61,7 @@ internal class Header
                 dataLength = jsonWriter.BytesCommitted;
             }
 
-            var buffer = Convert.ToBase64String(memoryStream.GetBuffer(), 0, (int)dataLength);
+            var buffer = Convert.ToBase64String(pooledOutputStream.GetBuffer(), 0, (int)dataLength);
 
             // Buffer length + additional space for base64 fixing 
             Span<char> fixedBuffer = stackalloc char[buffer.Length + 2];

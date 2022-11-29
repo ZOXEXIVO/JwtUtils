@@ -73,11 +73,11 @@ if (JWT.HS256.ValidateSignature(token, tokenSecret))
 string token = "{JWT-TOKEN}";
 
 // Default - no typed
-var tokenResult = JWT.Read(tokenSecret);
+var tokenResult = JWT.Read(token);
 var expiration = token.Exp();
 
 // You can map Jwt to your own model
-var tokenResult = JWT.Read<CustomJwtModel>(tokenSecret);
+var tokenResult = JWT.Read<CustomJwtModel>(token);
 ```
 
 ### Asymmetric algorithms: RS256, RS384, RS512

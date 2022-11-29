@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Buffers.Text;
 using System.Text;
+using System.Text.Json;
 using JwtUtils.Exceptions;
 using JwtUtils.Utils;
 
@@ -8,7 +9,19 @@ namespace JwtUtils;
 
 internal class Payload
 {
-    public static ReadOnlySpan<char> ExtractPayload(ReadOnlySpan<char> token)
+    public static T Read<T>(ReadOnlySpan<char> token)
+    {
+        var payload = ExtractPayload(token);
+        var decodedPayload = PrepareForDecoding(payload);
+        using (decodedPayload.PayloadMemory)
+        {
+            var actualPayloadBuffer = decodedPayload.PayloadMemory.Memory.Span.Slice(0, decodedPayload.ActualLength);
+
+            return JsonSerializer.Deserialize<T>(actualPayloadBuffer);
+        }
+    }
+
+    private static ReadOnlySpan<char> ExtractPayload(ReadOnlySpan<char> token)
     {
         var firstIndex = token.IndexOf('.');
         var lastIndex = token.LastIndexOf('.');
@@ -26,7 +39,7 @@ internal class Payload
         return token.Slice(firstIndex + 1, lastIndex - firstIndex - 1);
     }
 
-    public static (IMemoryOwner<char> PayloadMemory, int ActualLength) PrepareForDecoding(ReadOnlySpan<char> payload)
+    private static (IMemoryOwner<char> PayloadMemory, int ActualLength) PrepareForDecoding(ReadOnlySpan<char> payload)
     {
         return Base64Utils.DecodeFixedBase64(payload);
     }

@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace JwtUtils;
+﻿namespace JwtUtils;
 
 // ReSharper disable once InconsistentNaming
 public static partial class JWT
@@ -28,9 +26,9 @@ public static partial class JWT
     public static Dictionary<string, object> Read(ReadOnlySpan<char> token)
     {
         // ReSharper disable once ArrangeStaticMemberQualifier
-        return PayloadExt.ReadPayload<Dictionary<string, object>>(token);
+        return Payload.Read<Dictionary<string, object>>(token);
     }
-
+    
     /// <summary>
     /// Read token payload to your custom type object with System.Text.Json
     /// </summary>
@@ -39,7 +37,7 @@ public static partial class JWT
     public static T Read<T>(ReadOnlySpan<char> token)
     {
         // ReSharper disable once ArrangeStaticMemberQualifier
-        return PayloadExt.ReadPayload<T>(token);
+        return Payload.Read<T>(token);
     }
 }
     
@@ -59,20 +57,5 @@ public static partial class JWT
     // ReSharper disable once InconsistentNaming
     public static partial class HS512
     {
-    }
-}
-
-internal class PayloadExt
-{
-    public static T ReadPayload<T>(ReadOnlySpan<char> token)
-    {
-        var payload = Payload.ExtractPayload(token);
-        var decodedPayload = Payload.PrepareForDecoding(payload);
-        using (decodedPayload.PayloadMemory)
-        {
-            var actualPayloadBuffer = decodedPayload.PayloadMemory.Memory.Span.Slice(0, decodedPayload.ActualLength);
-
-            return JsonSerializer.Deserialize<T>(actualPayloadBuffer);
-        }
     }
 }

@@ -56,7 +56,7 @@ public class SymmetricBenchmarks
 
     static readonly SigningCredentials Credentials256 = new(SecurityKey, SecurityAlgorithms.HmacSha256);
 
-    private static readonly JwtSecurityToken JsonSecurityToken = new JwtSecurityToken("123", "1234", new List<Claim>
+    private static readonly JwtSecurityToken JsonSecurityToken = new("123", "1234", new List<Claim>
     {
         new("uname", "i.a.ivanov"),
         new("claim1", "claim1_value"),
