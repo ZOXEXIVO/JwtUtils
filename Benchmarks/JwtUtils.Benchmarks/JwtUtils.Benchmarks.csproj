@@ -7,10 +7,18 @@
         <TieredCompilation>false</TieredCompilation>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <NoWarn>1701;1702;IL2121;CS0618</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <NoWarn>1701;1702;IL2121;CS0618</NoWarn>
+    </PropertyGroup>
+
     <ItemGroup>
-      <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
-      <PackageReference Include="JWT" Version="9.0.3" />
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.0" />
+      <PackageReference Include="BenchmarkDotNet" Version="0.13.5" />
+      <PackageReference Include="JWT" Version="10.0.2" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0" />
     </ItemGroup>
 
     <ItemGroup>
