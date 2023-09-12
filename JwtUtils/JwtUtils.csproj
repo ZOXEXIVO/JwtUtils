@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <LangVersion>10</LangVersion>
+        <LangVersion>latestmajor</LangVersion>
         <Description>JwtUtils</Description>
         <Version>$(PackageVersion)</Version>
         <Title>JwtUtils</Title>
@@ -22,7 +22,7 @@
     
     <ItemGroup>
       <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.2" />
-      <PackageReference Include="System.Text.Json" Version="7.0.2" />
+      <PackageReference Include="System.Text.Json" Version="7.0.3" />
     </ItemGroup>
     
     <ItemGroup>

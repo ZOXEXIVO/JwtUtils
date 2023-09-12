@@ -20,7 +20,7 @@ internal static class PooledHmac
             var (currentAlgorithm, currentTokenSecret) = state;
             
             currentAlgorithm.AsSpan().CopyTo(chars);
-            chars = chars.Slice(currentAlgorithm.Length);
+            chars = chars[currentAlgorithm.Length..];
             
             currentTokenSecret.AsSpan().CopyTo(chars);
         });
@@ -32,16 +32,12 @@ internal static class PooledHmac
 
     private static HMAC Create(string algorithm, string tokenSecret)
     {
-        switch (algorithm)
+        return algorithm switch
         {
-            case SymmetricAlgorithms.Hs256:
-                return new HMACSHA256(Encoding.UTF8.GetBytes(tokenSecret));
-            case SymmetricAlgorithms.Hs384:
-                return new HMACSHA384(Encoding.UTF8.GetBytes(tokenSecret));
-            case SymmetricAlgorithms.Hs512:
-                return new HMACSHA256(Encoding.UTF8.GetBytes(tokenSecret));
-        }
-
-        throw new JwtUtilsException($"Unknown HMAC algorithm: {algorithm}");
+            SymmetricAlgorithms.Hs256 => new HMACSHA256(Encoding.UTF8.GetBytes(tokenSecret)),
+            SymmetricAlgorithms.Hs384 => new HMACSHA384(Encoding.UTF8.GetBytes(tokenSecret)),
+            SymmetricAlgorithms.Hs512 => new HMACSHA256(Encoding.UTF8.GetBytes(tokenSecret)),
+            _ => throw new JwtUtilsException($"Unknown HMAC algorithm: {algorithm}")
+        };
     }
 }

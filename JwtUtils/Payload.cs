@@ -15,7 +15,7 @@ internal class Payload
         var decodedPayload = PrepareForDecoding(payload);
         using (decodedPayload.PayloadMemory)
         {
-            var actualPayloadBuffer = decodedPayload.PayloadMemory.Memory.Span.Slice(0, decodedPayload.ActualLength);
+            var actualPayloadBuffer = decodedPayload.PayloadMemory.Memory.Span[..decodedPayload.ActualLength];
 
             return JsonSerializer.Deserialize<T>(actualPayloadBuffer);
         }
@@ -56,7 +56,7 @@ internal class Payload
 
             var bytesCount = Encoding.UTF8.GetBytes(payload, payloadBuffer);
 
-            var bytesPayload = payloadBuffer.AsSpan().Slice(0, bytesCount);
+            var bytesPayload = payloadBuffer.AsSpan()[..bytesCount];
 
             bytesToBase64Buffer = ArrayPool<byte>.Shared.Rent(Base64.GetMaxEncodedToUtf8Length(bytesCount));
 
@@ -66,7 +66,7 @@ internal class Payload
                 throw new JwtUtilsException("Base64 encoding failed");
             }
 
-            var actualBytesBuffer = bytesToBase64Buffer.AsSpan().Slice(0, bytesWritten);
+            var actualBytesBuffer = bytesToBase64Buffer.AsSpan()[..bytesWritten];
 
             var base64CharsCount = Encoding.UTF8.GetMaxByteCount(bytesWritten);
 

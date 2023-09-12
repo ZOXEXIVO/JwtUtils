@@ -23,14 +23,14 @@ internal class AsymmetricSignature
 
             var bytesRetrieved = Encoding.UTF8.GetBytes(payload, byteBuffer);
 
-            var actualBuffer = byteBuffer.AsSpan().Slice(0, bytesRetrieved);
+            var actualBuffer = byteBuffer.AsSpan()[..bytesRetrieved];
 
             if (!rsaAlgorithm.TrySignData(actualBuffer, hashBuffer, GetAlgorithm(algorithm), RSASignaturePadding.Pkcs1, out var hashBytesWritten))
             {
                 throw new JwtUtilsException($"Compute hash with algorithm {algorithm} failed");
             }
 
-            var actualHashData = hashBuffer.Slice(0, hashBytesWritten);
+            var actualHashData = hashBuffer[..hashBytesWritten];
 
             var maxEncoded = Base64.GetMaxEncodedToUtf8Length(actualHashData.Length);
 
@@ -38,7 +38,7 @@ internal class AsymmetricSignature
 
             actualHashData.CopyTo(resultBuffer);
 
-            return Base64Utils.ConvertToFixedBase64(hashBuffer.Slice(0, hashBytesWritten));
+            return Base64Utils.ConvertToFixedBase64(hashBuffer[..hashBytesWritten]);
         }
         finally
         {
@@ -50,17 +50,13 @@ internal class AsymmetricSignature
         
         HashAlgorithmName GetAlgorithm(string algorithm)
         {
-            switch (algorithm)
+            return algorithm switch
             {
-                case "RS256":
-                    return HashAlgorithmName.SHA256;
-                case "RS384":
-                    return HashAlgorithmName.SHA384;
-                case "RS512":
-                    return HashAlgorithmName.SHA512;
-            }
-
-            throw new JwtUtilsException($"Unknown RSA algorithm: {algorithm}");
+                "RS256" => HashAlgorithmName.SHA256,
+                "RS384" => HashAlgorithmName.SHA384,
+                "RS512" => HashAlgorithmName.SHA512,
+                _ => throw new JwtUtilsException($"Unknown RSA algorithm: {algorithm}")
+            };
         }
     }
 
@@ -79,9 +75,9 @@ internal class AsymmetricSignature
             
                 payloadBuffer = ArrayPool<byte>.Shared.Rent(payloadBytesLength);
 
-                var actualPayloadBuffer = payloadBuffer.AsSpan().Slice(0, Encoding.UTF8.GetBytes(payload, payloadBuffer));
+                var actualPayloadBuffer = payloadBuffer.AsSpan()[..Encoding.UTF8.GetBytes(payload, payloadBuffer)];
 
-                var decodedSignatureBytes = decodedSignature.Memory.Memory.Span.Slice(0, decodedSignature.Bytes);
+                var decodedSignatureBytes = decodedSignature.Memory.Memory.Span[..decodedSignature.Bytes];
                 
                 return rsaAlgorithm.PooledObject.VerifyData(actualPayloadBuffer, decodedSignatureBytes, GetAlgorithm(),
                     RSASignaturePadding.Pkcs1);
@@ -97,17 +93,13 @@ internal class AsymmetricSignature
 
         HashAlgorithmName GetAlgorithm()
         {
-            switch (algorithm)
+            return algorithm switch
             {
-                case "RS256":
-                    return HashAlgorithmName.SHA256;
-                case "RS384":
-                    return HashAlgorithmName.SHA384;
-                case "RS512":
-                    return HashAlgorithmName.SHA512;
-            }
-
-            throw new JwtUtilsException($"Unknown RSA algorithm: {algorithm}");
+                "RS256" => HashAlgorithmName.SHA256,
+                "RS384" => HashAlgorithmName.SHA384,
+                "RS512" => HashAlgorithmName.SHA512,
+                _ => throw new JwtUtilsException($"Unknown RSA algorithm: {algorithm}")
+            };
         }
     }
 }

@@ -62,6 +62,8 @@ public static class ClaimsDictionaryExtensions
                 }
                 break;
             }
+            default:
+                return null;
         }
         
         return null;

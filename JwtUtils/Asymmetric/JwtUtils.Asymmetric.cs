@@ -345,12 +345,11 @@ public static partial class JWT
         string kid)
     {
         var header = Header.Create(algorithm, kid);
-
         var payloadData = Payload.Create(tokenPayload);
 
         using (payloadData.PayloadMemory)
         {
-            var payload = payloadData.PayloadMemory.Memory.Span.Slice(0, payloadData.ActualLength).FixForWeb();
+            var payload = payloadData.PayloadMemory.Memory.Span[..payloadData.ActualLength].FixForWeb();
 
             var signaturePayloadLength = header.Length + 1 + payload.Length;
 
@@ -359,14 +358,14 @@ public static partial class JWT
                 var writeSpan = headerPayloadBuffer.Memory.Span;
 
                 header.AsSpan().CopyTo(writeSpan);
-                writeSpan = writeSpan.Slice(header.Length);
+                writeSpan = writeSpan[header.Length..];
 
                 writeSpan[0] = '.';
-                writeSpan = writeSpan.Slice(1);
+                writeSpan = writeSpan[1..];
 
                 payload.CopyTo(writeSpan);
 
-                var signaturePayload = headerPayloadBuffer.Memory.Span.Slice(0, signaturePayloadLength);
+                var signaturePayload = headerPayloadBuffer.Memory.Span[..signaturePayloadLength];
 
                 var signature = AsymmetricSignature.FromRSA(signaturePayload, rsaAlgorithm, algorithm);
                 using (signature.Memory)
@@ -378,14 +377,14 @@ public static partial class JWT
                         var resultSpan = resultMemoryBuffer.Memory.Span;
 
                         signaturePayload.CopyTo(resultSpan);
-                        resultSpan = resultSpan.Slice(signaturePayload.Length);
+                        resultSpan = resultSpan[signaturePayload.Length..];
 
                         resultSpan[0] = '.';
-                        resultSpan = resultSpan.Slice(1);
+                        resultSpan = resultSpan[1..];
 
-                        signature.Memory.Memory.Span.Slice(0, signature.Bytes).CopyTo(resultSpan);
+                        signature.Memory.Memory.Span[..signature.Bytes].CopyTo(resultSpan);
 
-                        return new String(resultMemoryBuffer.Memory.Span.Slice(0, tokenLength));
+                        return new string(resultMemoryBuffer.Memory.Span[..tokenLength]);
                     }
                 }
             }
@@ -403,8 +402,8 @@ public static partial class JWT
     {
         var lastIndex = token.LastIndexOf('.');
 
-        var payload = token.Slice(0, lastIndex);
-        var signature = token.Slice(lastIndex + 1);
+        var payload = token[..lastIndex];
+        var signature = token[(lastIndex + 1)..];
 
         return AsymmetricSignature.ValidateSignature(payload, signature, publicPemKey, algorithm);
     }

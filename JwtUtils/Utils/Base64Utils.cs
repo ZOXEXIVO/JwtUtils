@@ -36,7 +36,7 @@ internal static class Base64Utils
             }
         }
 
-        return buffer.Slice(0, endIdx + 1);
+        return buffer[..(endIdx + 1)];
     }
     
     public static Span<char> UnfixForWeb(this Span<char> buffer, int bufferLength)
@@ -63,17 +63,17 @@ internal static class Base64Utils
                 buffer[bufferLength] = '=';
                 buffer[bufferLength+1] = '=';
 
-                return buffer.Slice(0, bufferLength + 2);
+                return buffer[..(bufferLength + 2)];
             }
             case 3:
             {
                 buffer[bufferLength] = '=';
 
-                return buffer.Slice(0, bufferLength + 1);
+                return buffer[..(bufferLength + 1)];
             }
         }
 
-        return buffer.Slice(0, bufferLength);
+        return buffer[..bufferLength];
     }
 
     public static (IMemoryOwner<char> Memory, int Bytes) ConvertToFixedBase64(Span<byte> buffer)
@@ -91,7 +91,7 @@ internal static class Base64Utils
                 throw new JwtUtilsException("Base64 encoding failed");
             }
 
-            var actualBytesBuffer = bytesToBase64Buffer.AsSpan().Slice(0, bytesWritten);
+            var actualBytesBuffer = bytesToBase64Buffer.AsSpan()[..bytesWritten];
             
             var base64CharsCount = Encoding.UTF8.GetMaxByteCount(bytesWritten);
 
@@ -140,7 +140,7 @@ internal static class Base64Utils
            
             var encodedBytesLength = Encoding.UTF8.GetBytes(unfixedBuffer, byteBuffer);
 
-            var actualBytesBuffer = byteBuffer.AsSpan().Slice(0, encodedBytesLength);
+            var actualBytesBuffer = byteBuffer.AsSpan()[..encodedBytesLength];
             
             var resultBufferLength = Base64.GetMaxDecodedFromUtf8Length(encodedBytesLength);
             
@@ -182,13 +182,13 @@ internal static class Base64Utils
             
             buffer.CopyTo( bufferCopy);
 
-            var unfixedBuffer = bufferCopy.AsSpan().Slice(0, bufferLengthWithExtraSpace).UnfixForWeb(buffer.Length);
+            var unfixedBuffer = bufferCopy.AsSpan()[..bufferLengthWithExtraSpace].UnfixForWeb(buffer.Length);
             
             byteBuffer = ArrayPool<byte>.Shared.Rent(Encoding.UTF8.GetMaxByteCount(unfixedBuffer.Length));
            
             var encodedBytesLength = Encoding.UTF8.GetBytes(unfixedBuffer, byteBuffer);
 
-            var actualBytesBuffer = byteBuffer.AsSpan().Slice(0, encodedBytesLength);
+            var actualBytesBuffer = byteBuffer.AsSpan()[..encodedBytesLength];
             
             var resultBufferLength = Base64.GetMaxDecodedFromUtf8Length(encodedBytesLength);
             
@@ -204,7 +204,7 @@ internal static class Base64Utils
      
             var resultBuffer = MemoryPool<char>.Shared.Rent(finalCharCount);
 
-            var utfEncodedLength = Encoding.UTF8.GetChars(encodingByteBuffer.AsSpan().Slice(0, base64DecodedBytes), resultBuffer.Memory.Span);
+            var utfEncodedLength = Encoding.UTF8.GetChars(encodingByteBuffer.AsSpan()[..base64DecodedBytes], resultBuffer.Memory.Span);
             
             return (resultBuffer, utfEncodedLength);
         }

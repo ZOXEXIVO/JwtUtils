@@ -25,12 +25,12 @@ internal class SymmetricSignature
 
             var bytesRetrieved = Encoding.UTF8.GetBytes(payload, byteBuffer);
 
-            if (!hashAlgorithm.PooledObject.TryComputeHash(byteBuffer.AsSpan().Slice(0, bytesRetrieved), hashBuffer, out int bytesWritten))
+            if (!hashAlgorithm.PooledObject.TryComputeHash(byteBuffer.AsSpan()[..bytesRetrieved], hashBuffer, out int bytesWritten))
             {
                 throw new JwtUtilsException($"Compute hash with algorithm {algorithm} failed");
             }
 
-            var actualHashData = hashBuffer.Slice(0, bytesWritten);
+            var actualHashData = hashBuffer[..bytesWritten];
 
             var maxEncoded = Base64.GetMaxEncodedToUtf8Length(actualHashData.Length);
 
@@ -38,7 +38,7 @@ internal class SymmetricSignature
 
             actualHashData.CopyTo(resultBuffer);
 
-            return Base64Utils.ConvertToFixedBase64(hashBuffer.Slice(0, bytesWritten));
+            return Base64Utils.ConvertToFixedBase64(hashBuffer[..bytesWritten]);
         }
         finally
         {
