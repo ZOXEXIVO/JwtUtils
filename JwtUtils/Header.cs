@@ -17,13 +17,18 @@ internal class Header
     private const int MaximumFreeLargePoolBytes = MaximumBufferSize * 4;
     private const int MaximumFreeSmallPoolBytes = 250 * BlockSize;
     
-    private static readonly RecyclableMemoryStreamManager PoolManager = new(BlockSize, LargeBufferMultiple, MaximumBufferSize)
-    { 
+    private static readonly RecyclableMemoryStreamManager.Options Options = new(
+        BlockSize, 
+        LargeBufferMultiple, 
+        MaximumBufferSize, 
+        MaximumFreeLargePoolBytes, 
+        MaximumFreeSmallPoolBytes)
+    {
         AggressiveBufferReturn = true,
-        GenerateCallStacks = false,
-        MaximumFreeLargePoolBytes = MaximumFreeLargePoolBytes,
-        MaximumFreeSmallPoolBytes = MaximumFreeSmallPoolBytes
-    }; 
+        GenerateCallStacks = false
+    };
+    
+    private static readonly RecyclableMemoryStreamManager PoolManager = new(Options); 
     
     /// <summary>
     /// Create fixed for web JwtHeader
@@ -42,7 +47,7 @@ internal class Header
 
             long dataLength;
             
-            using (var jsonWriter = new Utf8JsonWriter(pooledOutputStream))
+            using (var jsonWriter = new Utf8JsonWriter((IBufferWriter<byte>)pooledOutputStream))
             {
                 jsonWriter.WriteStartObject();
                     
