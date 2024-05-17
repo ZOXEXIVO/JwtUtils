@@ -7,7 +7,7 @@ namespace JwtUtils.Tests.Symmetric;
 
 public class Symmetric
 {
-    string tokenSecret = "12345";
+    readonly string tokenSecret = "12345";
 
     private readonly Dictionary<string, object> _untypedPayload = new()
     {
