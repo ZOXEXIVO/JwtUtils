@@ -353,39 +353,38 @@ public static partial class JWT
 
             var signaturePayloadLength = header.Length + 1 + payload.Length;
 
-            using (var headerPayloadBuffer = MemoryPool<char>.Shared.Rent(signaturePayloadLength))
+            Span<char> headerPayloadBuffer = stackalloc char[signaturePayloadLength];
+            
+            var writeSpan = headerPayloadBuffer;
+
+            header.AsSpan().CopyTo(writeSpan);
+            writeSpan = writeSpan[header.Length..];
+
+            writeSpan[0] = '.';
+            writeSpan = writeSpan[1..];
+
+            payload.CopyTo(writeSpan);
+
+            var signaturePayload = headerPayloadBuffer[..signaturePayloadLength];
+
+            var signature = AsymmetricSignature.FromRSA(signaturePayload, rsaAlgorithm, algorithm);
+            using (signature.Memory)
             {
-                var writeSpan = headerPayloadBuffer.Memory.Span;
+                int tokenLength = signaturePayloadLength + 1 + signature.Bytes;
 
-                header.AsSpan().CopyTo(writeSpan);
-                writeSpan = writeSpan[header.Length..];
-
-                writeSpan[0] = '.';
-                writeSpan = writeSpan[1..];
-
-                payload.CopyTo(writeSpan);
-
-                var signaturePayload = headerPayloadBuffer.Memory.Span[..signaturePayloadLength];
-
-                var signature = AsymmetricSignature.FromRSA(signaturePayload, rsaAlgorithm, algorithm);
-                using (signature.Memory)
+                using (var resultMemoryBuffer = MemoryPool<char>.Shared.Rent(tokenLength))
                 {
-                    int tokenLength = signaturePayloadLength + 1 + signature.Bytes;
+                    var resultSpan = resultMemoryBuffer.Memory.Span;
 
-                    using (var resultMemoryBuffer = MemoryPool<char>.Shared.Rent(tokenLength))
-                    {
-                        var resultSpan = resultMemoryBuffer.Memory.Span;
+                    signaturePayload.CopyTo(resultSpan);
+                    resultSpan = resultSpan[signaturePayload.Length..];
 
-                        signaturePayload.CopyTo(resultSpan);
-                        resultSpan = resultSpan[signaturePayload.Length..];
+                    resultSpan[0] = '.';
+                    resultSpan = resultSpan[1..];
 
-                        resultSpan[0] = '.';
-                        resultSpan = resultSpan[1..];
+                    signature.Memory.Memory.Span[..signature.Bytes].CopyTo(resultSpan);
 
-                        signature.Memory.Memory.Span[..signature.Bytes].CopyTo(resultSpan);
-
-                        return new string(resultMemoryBuffer.Memory.Span[..tokenLength]);
-                    }
+                    return new string(resultMemoryBuffer.Memory.Span[..tokenLength]);
                 }
             }
         }

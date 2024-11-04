@@ -16,7 +16,7 @@ internal static class Base64Utils
     {
         int endIdx = buffer.Length - 1;
 
-        while ((buffer[endIdx] == '=' || buffer[endIdx] == 0)  && endIdx > 0)
+        while (endIdx >= 0 && (buffer[endIdx] == '=' || buffer[endIdx] == '\0'))
         {
             endIdx--;
         }
