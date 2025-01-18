@@ -3,7 +3,7 @@ name: default
 
 steps:
   - name: build
-    image: mcr.microsoft.com/dotnet/sdk:8.0
+    image: mcr.microsoft.com/dotnet/sdk:9.0
     depends_on: [ clone ]
     volumes:
       - name: docker_sock
@@ -13,7 +13,7 @@ steps:
       - dotnet test
 
   - name: push
-    image: mcr.microsoft.com/dotnet/sdk:8.0
+    image: mcr.microsoft.com/dotnet/sdk:9.0
     environment:
       NUGET_APIKEY:
         from_secret: NUGET_APIKEY
