@@ -8,7 +8,7 @@ using JwtUtils.Utils;
 
 namespace JwtUtils.Asymmetric;
 
-internal class AsymmetricSignature
+internal static class AsymmetricSignature
 {
     public static (IMemoryOwner<char> Memory, int Bytes) FromRSA(ReadOnlySpan<char> payload, RSA rsaAlgorithm,
         string algorithm)

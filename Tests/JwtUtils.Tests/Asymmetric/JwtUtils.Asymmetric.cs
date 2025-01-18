@@ -7,7 +7,7 @@ namespace JwtUtils.Tests.Asymmetric;
 
 public class Asymmetric
 {
-    private readonly string _privateKey = @"MIIJKgIBAAKCAgEA9GF97STxVGbXpBFmudS/RRT58mfiR/+t2zb4f/uF3qmYb/yu
+    private const string PrivateKey = @"MIIJKgIBAAKCAgEA9GF97STxVGbXpBFmudS/RRT58mfiR/+t2zb4f/uF3qmYb/yu
 oekYX5s17YPcIYshiX1XEN2gitHf3IcOOELRiNDSW1zrADzKFTeWzpji48IBObRf
 5Rda2Q4wIX6YUca/8eLvHcyOlDyCh0dfZNae2w/Ts8xda1TYC41rlD5rnQDgvsCK
 4fzfm39hCet+nMz4jLvRQ66aDs42qCBLK9cxRJcptsiR/pxmuJLC2jKz/PLjgrSC
@@ -57,7 +57,7 @@ abSW41j1K4XUWDfTFOmhQaJUpxiYfP+wpQQ4ZZl3hUjxjg39Bz2DO4Xo9Rt1dR8n
 b3CtKwYPtGkQncSvba2HSurYArAxsCU2QeSAYbmCgtiXcF2Hw8Xt/ADY711iBDwq
 O9wqUEJy2v8xOMbHvMkoKLPLc590zGV88HNvzJHkF5N5HWTB9ZZEWcehf6RcTA==";
 
-    private string _publicKey = @"MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA9GF97STxVGbXpBFmudS/
+    private const string PublicKey = @"MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA9GF97STxVGbXpBFmudS/
 RRT58mfiR/+t2zb4f/uF3qmYb/yuoekYX5s17YPcIYshiX1XEN2gitHf3IcOOELR
 iNDSW1zrADzKFTeWzpji48IBObRf5Rda2Q4wIX6YUca/8eLvHcyOlDyCh0dfZNae
 2w/Ts8xda1TYC41rlD5rnQDgvsCK4fzfm39hCet+nMz4jLvRQ66aDs42qCBLK9cx
@@ -69,8 +69,8 @@ JVtlccN8ujqAG/pk49vY80+OpKMGry+vBpO8LZpXkyzryW5vUSdhOgpfZIpU5QcO
 VNj1RNxmYEbUf+hd40MGzpTLOJxva880vpcu/BxLqi3xfOhLQrXTXRKRdBPr1yM1
 a9ku4ZoA7hOBuJawupx7v3oY+TZQ4tKUs554fg6zj87LUMgPEaozvMz8MWSlhnD1
 UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
-    
-    readonly Dictionary<string, object> _untypedPayload = new()
+
+    private readonly Dictionary<string, object> _untypedPayload = new()
     {
         { "exp", 1639942616 },
         { "uname", "i.a.ivanov" },
@@ -93,8 +93,8 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS256_Untyped_IsCorrect()
     {
-        var token = JWT.RS256.Create(_untypedPayload, _privateKey, "kid1");
-        var isTokenValid = JWT.RS256.ValidateSignature(token, _publicKey);
+        var token = JWT.RS256.Create(_untypedPayload, PrivateKey, "kid1");
+        var isTokenValid = JWT.RS256.ValidateSignature(token, PublicKey);
 
         var tokenData =  JWT.Read(token);
 
@@ -107,8 +107,8 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS256_Typed_IsCorrect()
     {
-        var token = JWT.RS256.Create(_typedPayload, _privateKey, "kid1");
-        var isTokenValid = JWT.RS256.ValidateSignature(token, _publicKey);
+        var token = JWT.RS256.Create(_typedPayload, PrivateKey, "kid1");
+        var isTokenValid = JWT.RS256.ValidateSignature(token, PublicKey);
 
         var tokenData =  JWT.Read<JwtPayload>(token);
 
@@ -121,8 +121,8 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS384_Untyped_IsCorrect()
     {
-        var token = JWT.RS384.Create(_untypedPayload, _privateKey, "kid1");
-        var isTokenValid = JWT.RS384.ValidateSignature(token, _publicKey);
+        var token = JWT.RS384.Create(_untypedPayload, PrivateKey, "kid1");
+        var isTokenValid = JWT.RS384.ValidateSignature(token, PublicKey);
 
         var tokenData = JWT.Read(token);
 
@@ -135,8 +135,8 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS384_Typed_IsCorrect()
     {
-        var token = JWT.RS384.Create(_typedPayload, _privateKey, "kid1");
-        var isTokenValid = JWT.RS384.ValidateSignature(token, _publicKey);
+        var token = JWT.RS384.Create(_typedPayload, PrivateKey, "kid1");
+        var isTokenValid = JWT.RS384.ValidateSignature(token, PublicKey);
 
         var tokenData =  JWT.Read<JwtPayload>(token);
 
@@ -149,8 +149,8 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS512_Untyped_IsCorrect()
     {
-        var token = JWT.RS512.Create(_untypedPayload, _privateKey, "kid1");
-        var isTokenValid = JWT.RS512.ValidateSignature(token, _publicKey);
+        var token = JWT.RS512.Create(_untypedPayload, PrivateKey, "kid1");
+        var isTokenValid = JWT.RS512.ValidateSignature(token, PublicKey);
 
         var tokenData = JWT.Read(token);
 
@@ -163,8 +163,8 @@ UGrjbNX1LcdQ/HAtFCuqIE0CAwEAAQ==";
     [Fact]
     public void JwtUtils_RS512_Typed_IsCorrect()
     {
-        var token = JWT.RS512.Create(_typedPayload, _privateKey, "kid1");
-        var isTokenValid = JWT.RS512.ValidateSignature(token, _publicKey);
+        var token = JWT.RS512.Create(_typedPayload, PrivateKey, "kid1");
+        var isTokenValid = JWT.RS512.ValidateSignature(token, PublicKey);
 
         var tokenData =  JWT.Read<JwtPayload>(token);
 

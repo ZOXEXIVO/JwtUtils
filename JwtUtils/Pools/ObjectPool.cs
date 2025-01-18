@@ -4,7 +4,7 @@ namespace JwtUtils.Pools;
 
 internal class ObjectPool<T>
 {
-    private readonly ConcurrentBag<T> _pool = new();
+    private readonly ConcurrentBag<T> _pool = [];
 
     public PoolGuard<T> Get(Func<T> generator)
     {
@@ -18,18 +18,12 @@ internal class ObjectPool<T>
     }
 }
 
-internal readonly struct PoolGuard<T> : IDisposable
+internal readonly struct PoolGuard<T>(ObjectPool<T> pool, T obj) : IDisposable
 {
-    private ObjectPool<T> Pool { get; }
-        
-    public T PooledObject { get; }
-        
-    public PoolGuard(ObjectPool<T> pool, T obj)
-    {
-        Pool = pool;
-        PooledObject = obj;
-    }
-        
+    private ObjectPool<T> Pool { get; } = pool;
+
+    public T PooledObject { get; } = obj;
+
     public void Dispose()
     {
         Pool.Return(PooledObject);
