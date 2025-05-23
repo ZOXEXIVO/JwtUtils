@@ -6,6 +6,7 @@ using JwtUtils.Asymmetric;
 using JwtUtils.Asymmetric.Algorithms;
 using JwtUtils.Asymmetric.Constants;
 using JwtUtils.Extensions;
+using JwtUtils.Json;
 using JwtUtils.Utils;
 
 // ReSharper disable once CheckNamespace

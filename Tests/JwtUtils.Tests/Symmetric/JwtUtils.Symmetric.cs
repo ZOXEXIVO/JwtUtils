@@ -64,7 +64,7 @@ public class Symmetric
         var token = JWT.HS384.Create(_untypedPayload, TokenSecret, "kid1");
         var isTokenValid = JWT.HS384.ValidateSignature(token, TokenSecret);
 
-        var tokenData = JwtUtils.JWT.Read(token);
+        var tokenData = JWT.Read(token);
 
         var expiration = tokenData.Exp();
         

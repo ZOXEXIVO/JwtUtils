@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+﻿using JwtUtils.Json;
 
 namespace JwtUtils.Tests.Common;
 

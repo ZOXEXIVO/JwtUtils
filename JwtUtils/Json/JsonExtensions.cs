@@ -1,13 +1,12 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Text.Json;
 
-namespace JwtUtils.Extensions;
+namespace JwtUtils.Json;
 
 internal static class JsonExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static string ToJson(this object obj)
     {
-        return JsonSerializer.Serialize(obj);
+        return SimpleJson.Serialize(obj);
     }
 }

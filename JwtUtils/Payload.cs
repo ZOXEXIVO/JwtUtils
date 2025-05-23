@@ -1,8 +1,8 @@
 ﻿using System.Buffers;
 using System.Buffers.Text;
 using System.Text;
-using System.Text.Json;
 using JwtUtils.Exceptions;
+using JwtUtils.Json;
 using JwtUtils.Utils;
 
 namespace JwtUtils;
@@ -17,7 +17,7 @@ internal class Payload
         {
             var actualPayloadBuffer = decodedPayload.PayloadMemory.Memory.Span[..decodedPayload.ActualLength];
 
-            return JsonSerializer.Deserialize<T>(actualPayloadBuffer);
+            return SimpleJson.Deserialize<T>(actualPayloadBuffer);
         }
     }
 
